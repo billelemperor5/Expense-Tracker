@@ -6014,76 +6014,9 @@
                                     // فترة جديدة من السحابة
                                     allExpensePeriods[periodId] = cloudData.allExpensePeriods[periodId];
                                 } else {
-                                    // مزامنة ذكية: دمج البيانات من الجهازين
-                                    const cloudPeriod = cloudData.allExpensePeriods[periodId];
-                                    const localPeriod = allExpensePeriods[periodId];
-
-                                    // 1. مزامنة العناصر (Items) - دمج ذكي
-                                    if (cloudPeriod.items) {
-                                        // أولاً: تحديث/إضافة العناصر من السحابة
-                                        cloudPeriod.items.forEach(cloudItem => {
-                                            const localItemIndex = localPeriod.items.findIndex(localItem =>
-                                                localItem.category === cloudItem.category
-                                            );
-
-                                            if (localItemIndex === -1) {
-                                                // عنصر جديد من السحابة - إضافته
-                                                localPeriod.items.push({
-                                                    ...cloudItem,
-                                                    lastModified: cloudItem.lastModified || Date.now()
-                                                });
-                                            } else {
-                                                // عنصر موجود - مقارنة التواريخ
-                                                const localItem = localPeriod.items[localItemIndex];
-                                                const cloudTimestamp = cloudItem.lastModified || 0;
-                                                const localTimestamp = localItem.lastModified || 0;
-
-                                                // أخذ الأحدث
-                                                if (cloudTimestamp >= localTimestamp) {
-                                                    // السحابة أحدث - تحديث من السحابة
-                                                    localPeriod.items[localItemIndex].budget = cloudItem.budget;
-                                                    localPeriod.items[localItemIndex].actual = cloudItem.actual;
-                                                    localPeriod.items[localItemIndex].lastModified = cloudItem.lastModified;
-                                                }
-                                                // إذا كان المحلي أحدث، نبقي على القيم المحلية
-                                            }
-                                        });
-
-                                        // ثانياً: إضافة العناصر المحلية التي لا توجد في السحابة
-                                        localPeriod.items.forEach(localItem => {
-                                            const existsInCloud = cloudPeriod.items.some(cloudItem =>
-                                                cloudItem.category === localItem.category
-                                            );
-                                            if (!existsInCloud) {
-                                                // عنصر محلي جديد - سيتم رفعه في النسخة الاحتياطية القادمة
-                                                if (!localItem.lastModified) {
-                                                    localItem.lastModified = Date.now();
-                                                }
-                                            }
-                                        });
-                                    }
-
-                                    // 2. مزامنة سجل الأنشطة (Activity Log)
-                                    if (cloudPeriod.activityLog) {
-                                        if (!localPeriod.activityLog) localPeriod.activityLog = [];
-                                        cloudPeriod.activityLog.forEach(cloudLog => {
-                                            const exists = localPeriod.activityLog.some(localLog =>
-                                                localLog.timestamp === cloudLog.timestamp
-                                            );
-                                            if (!exists) {
-                                                localPeriod.activityLog.push(cloudLog);
-                                            }
-                                        });
-                                    }
-
-                                    // 3. مزامنة الدخل الكلي (Total Income) - أخذ الأكبر
-                                    if (cloudPeriod.totalIncome !== undefined) {
-                                        // أخذ القيمة الأكبر (الأكثر واقعية)
-                                        localPeriod.totalIncome = Math.max(
-                                            localPeriod.totalIncome || 0,
-                                            cloudPeriod.totalIncome || 0
-                                        );
-                                    }
+                                    // استبدال كامل: النسخة الاحتياطية من السحابة = الحقيقة المطلقة
+                                    // نستبدل البيانات المحلية بالكامل بما في السحابة
+                                    allExpensePeriods[periodId] = cloudData.allExpensePeriods[periodId];
                                 }
                             });
 
@@ -6092,83 +6025,23 @@
 
                             // تحديث البيانات الحالية
                             expenseManagerData = getPeriodData(currentPeriodId);
-                        } else if (cloudData.expenseManagerData && cloudData.expenseManagerData.items) {
-                            // للتوافق مع النسخ القديمة - تحديث القيم من السحابة
-                            cloudData.expenseManagerData.items.forEach(cloudItem => {
-                                const localItemIndex = expenseManagerData.items.findIndex(localItem =>
-                                    localItem.category === cloudItem.category
-                                );
+                        } else if (cloudData.expenseManagerData) {
+                            // للتوافق مع النسخ القديمة - استبدال كامل
+                            expenseManagerData = cloudData.expenseManagerData;
 
-                                if (localItemIndex === -1) {
-                                    // عنصر جديد من السحابة - إضافته
-                                    expenseManagerData.items.push(cloudItem);
-                                } else {
-                                    // عنصر موجود - تحديث القيم من السحابة (الأحدث)
-                                    expenseManagerData.items[localItemIndex].budget = cloudItem.budget;
-                                    expenseManagerData.items[localItemIndex].actual = cloudItem.actual;
-                                }
-                            });
-
-                            // دمج سجل الأنشطة
-                            if (cloudData.expenseManagerData.activityLog) {
-                                if (!expenseManagerData.activityLog) expenseManagerData.activityLog = [];
-                                cloudData.expenseManagerData.activityLog.forEach(cloudLog => {
-                                    const exists = expenseManagerData.activityLog.some(localLog =>
-                                        localLog.timestamp === cloudLog.timestamp
-                                    );
-                                    if (!exists) {
-                                        expenseManagerData.activityLog.push(cloudLog);
-                                    }
-                                });
-                            }
-
-                            // تحديث الدخل من السحابة (الأحدث)
-                            if (cloudData.expenseManagerData.totalIncome !== undefined) {
-                                expenseManagerData.totalIncome = cloudData.expenseManagerData.totalIncome;
-                            }
+                            // حفظ في الفترة الحالية
+                            allExpensePeriods[currentPeriodId] = expenseManagerData;
+                            localStorage.setItem('allExpensePeriods', JSON.stringify(allExpensePeriods));
                         }
 
-                        // 2. Wallet: دمج المعاملات (transactions)
+                        // 2. Wallet: استبدال كامل
                         if (cloudData.smartWalletData) {
-                            // دمج المعاملات
-                            if (cloudData.smartWalletData.transactions) {
-                                cloudData.smartWalletData.transactions.forEach(cloudTx => {
-                                    const exists = smartWalletData.transactions.some(localTx =>
-                                        localTx.timestamp === cloudTx.timestamp
-                                    );
-                                    if (!exists) {
-                                        smartWalletData.transactions.push(cloudTx);
-                                    }
-                                });
-                            }
-
-                            // تحديث الرصيد
-                            if (cloudData.smartWalletData.balance !== undefined) {
-                                smartWalletData.balance = cloudData.smartWalletData.balance;
-                            }
+                            smartWalletData = cloudData.smartWalletData;
                         }
 
-                        // 3. Attendance: دمج السجلات
-                        if (cloudData.attendanceData && cloudData.attendanceData.records) {
-                            Object.keys(cloudData.attendanceData.records).forEach(date => {
-                                if (!attendanceData.records[date]) {
-                                    attendanceData.records[date] = cloudData.attendanceData.records[date];
-                                }
-                            });
-                            if (cloudData.attendanceData.activities) {
-                                cloudData.attendanceData.activities.forEach(cloudAct => {
-                                    const exists = attendanceData.activities.some(localAct =>
-                                        localAct.timestamp === cloudAct.timestamp
-                                    );
-                                    if (!exists) {
-                                        attendanceData.activities.push(cloudAct);
-                                    }
-                                });
-                            }
-                            // دمج معلومات مكان العمل
-                            if (cloudData.attendanceData.workplace) {
-                                attendanceData.workplace = cloudData.attendanceData.workplace;
-                            }
+                        // 3. Attendance: استبدال كامل
+                        if (cloudData.attendanceData) {
+                            attendanceData = cloudData.attendanceData;
                         }
 
                         // Save merged data
