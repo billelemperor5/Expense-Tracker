@@ -3655,13 +3655,9 @@
             const isPermanent = localStorage.getItem('expense_distribution_mode') === 'permanent';
             let periodControlHTML = '';
 
-            if (isPermanent) {
-                periodControlHTML = `
-                    <button onclick="resetPermanentPeriod()" style="font-size: 12px; color: #ef4444; background: #fee2e2; padding: 6px 12px; border-radius: 20px; border: 1px solid #fecaca; display: flex; align-items: center; gap: 6px; font-weight: 700; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-                        <i class="fas fa-redo"></i> ${t.btn_reset_period}
-                    </button>
-                `;
-            } else {
+            // في الوضع الشهري فقط: عرض زر اختيار الشهر
+            // في الوضع الدائم: لا يظهر أي زر
+            if (!isPermanent) {
                 periodControlHTML = `
                      <button onclick="openPeriodSelectionModal()" style="font-size: 12px; color: var(--text); background: var(--bg); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 6px; font-weight: 700; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
                         ${getPeriodLabel(currentPeriodId)} <i class="fas fa-chevron-down" style="font-size: 10px; opacity: 0.7;"></i>
