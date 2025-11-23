@@ -2357,8 +2357,20 @@
                         const cloudData = result.data;
 
                         // Update counts from cloud data
-                        const cloudExpenseCount = (cloudData.expenseManagerData && cloudData.expenseManagerData.items) ? cloudData.expenseManagerData.items.length : 0;
-                        const cloudWalletCount = (cloudData.smartWalletData && cloudData.smartWalletData.history) ? cloudData.smartWalletData.history.length : 0;
+                        // حساب عدد جميع العناصر من جميع الفترات
+                        let cloudExpenseCount = 0;
+                        if (cloudData.allExpensePeriods) {
+                            Object.keys(cloudData.allExpensePeriods).forEach(periodId => {
+                                if (cloudData.allExpensePeriods[periodId].items) {
+                                    cloudExpenseCount += cloudData.allExpensePeriods[periodId].items.length;
+                                }
+                            });
+                        } else if (cloudData.expenseManagerData && cloudData.expenseManagerData.items) {
+                            // للتوافق مع النسخ القديمة
+                            cloudExpenseCount = cloudData.expenseManagerData.items.length;
+                        }
+
+                        const cloudWalletCount = (cloudData.smartWalletData && cloudData.smartWalletData.transactions) ? cloudData.smartWalletData.transactions.length : 0;
                         const cloudAttendanceCount = (cloudData.attendanceData && cloudData.attendanceData.records) ? Object.keys(cloudData.attendanceData.records).length : 0;
 
                         // Update UI
@@ -5901,15 +5913,17 @@
                 return;
             }
 
-            // Gather Data
+            // Gather Data - حفظ جميع البيانات بشكل صحيح
             const dataToBackup = {
-                expenseManagerData: expenseManagerData,
+                allExpensePeriods: allExpensePeriods, // حفظ جميع الفترات بدلاً من الفترة الحالية فقط
+                expenseManagerData: expenseManagerData, // للتوافق مع الإصدارات القديمة
                 smartWalletData: smartWalletData,
                 attendanceData: attendanceData,
                 settings: {
                     lang: currentLang,
                     theme: currentTheme,
-                    currency: currentCurrency
+                    currency: currentCurrency,
+                    expense_distribution_mode: localStorage.getItem('expense_distribution_mode') || 'monthly'
                 }
             };
 
@@ -5933,15 +5947,22 @@
                 if (dateEl) dateEl.innerText = date;
 
                 // Update data summary counts
-                const expenseCount = (expenseManagerData && expenseManagerData.items) ? expenseManagerData.items.length : 0;
-                const walletCount = (smartWalletData && smartWalletData.history) ? smartWalletData.history.length : 0;
+                // حساب عدد جميع العناصر من جميع الفترات
+                let totalExpenseItems = 0;
+                Object.keys(allExpensePeriods).forEach(periodId => {
+                    if (allExpensePeriods[periodId].items) {
+                        totalExpenseItems += allExpensePeriods[periodId].items.length;
+                    }
+                });
+
+                const walletCount = (smartWalletData && smartWalletData.transactions) ? smartWalletData.transactions.length : 0;
                 const attendanceCount = (attendanceData && attendanceData.records) ? Object.keys(attendanceData.records).length : 0;
 
                 const expenseEl = document.getElementById('cloudExpenseCount');
                 const walletEl = document.getElementById('cloudWalletCount');
                 const attendanceEl = document.getElementById('cloudAttendanceCount');
 
-                if (expenseEl) expenseEl.textContent = expenseCount;
+                if (expenseEl) expenseEl.textContent = totalExpenseItems;
                 if (walletEl) walletEl.textContent = walletCount;
                 if (attendanceEl) attendanceEl.textContent = attendanceCount;
 
@@ -5989,8 +6010,57 @@
                         const cloudData = result.data;
 
                         // Merge Logic
-                        // 1. Expenses: Append unique items
-                        if (cloudData.expenseManagerData && cloudData.expenseManagerData.items) {
+                        // 1. Expenses: استرجاع جميع الفترات
+                        if (cloudData.allExpensePeriods) {
+                            // دمج جميع الفترات
+                            Object.keys(cloudData.allExpensePeriods).forEach(periodId => {
+                                if (!allExpensePeriods[periodId]) {
+                                    // فترة جديدة من السحابة
+                                    allExpensePeriods[periodId] = cloudData.allExpensePeriods[periodId];
+                                } else {
+                                    // دمج البيانات للفترة الموجودة
+                                    const cloudPeriod = cloudData.allExpensePeriods[periodId];
+                                    const localPeriod = allExpensePeriods[periodId];
+
+                                    // دمج العناصر
+                                    if (cloudPeriod.items) {
+                                        cloudPeriod.items.forEach(cloudItem => {
+                                            const exists = localPeriod.items.some(localItem =>
+                                                localItem.category === cloudItem.category
+                                            );
+                                            if (!exists) {
+                                                localPeriod.items.push(cloudItem);
+                                            }
+                                        });
+                                    }
+
+                                    // دمج سجل الأنشطة
+                                    if (cloudPeriod.activityLog) {
+                                        if (!localPeriod.activityLog) localPeriod.activityLog = [];
+                                        cloudPeriod.activityLog.forEach(cloudLog => {
+                                            const exists = localPeriod.activityLog.some(localLog =>
+                                                localLog.timestamp === cloudLog.timestamp
+                                            );
+                                            if (!exists) {
+                                                localPeriod.activityLog.push(cloudLog);
+                                            }
+                                        });
+                                    }
+
+                                    // تحديث الدخل إذا كان أكبر
+                                    if (cloudPeriod.totalIncome > localPeriod.totalIncome) {
+                                        localPeriod.totalIncome = cloudPeriod.totalIncome;
+                                    }
+                                }
+                            });
+
+                            // حفظ جميع الفترات
+                            localStorage.setItem('allExpensePeriods', JSON.stringify(allExpensePeriods));
+
+                            // تحديث البيانات الحالية
+                            expenseManagerData = getPeriodData(currentPeriodId);
+                        } else if (cloudData.expenseManagerData && cloudData.expenseManagerData.items) {
+                            // للتوافق مع النسخ القديمة
                             cloudData.expenseManagerData.items.forEach(cloudItem => {
                                 const exists = expenseManagerData.items.some(localItem =>
                                     (localItem.timestamp && localItem.timestamp === cloudItem.timestamp) ||
@@ -6000,26 +6070,46 @@
                                     expenseManagerData.items.push(cloudItem);
                                 }
                             });
+
+                            // دمج سجل الأنشطة
+                            if (cloudData.expenseManagerData.activityLog) {
+                                if (!expenseManagerData.activityLog) expenseManagerData.activityLog = [];
+                                cloudData.expenseManagerData.activityLog.forEach(cloudLog => {
+                                    const exists = expenseManagerData.activityLog.some(localLog =>
+                                        localLog.timestamp === cloudLog.timestamp
+                                    );
+                                    if (!exists) {
+                                        expenseManagerData.activityLog.push(cloudLog);
+                                    }
+                                });
+                            }
+
                             if (cloudData.expenseManagerData.totalIncome > expenseManagerData.totalIncome) {
                                 expenseManagerData.totalIncome = cloudData.expenseManagerData.totalIncome;
                             }
                         }
 
-                        // 2. Wallet: Merge transactions
-                        if (cloudData.smartWalletData && cloudData.smartWalletData.history) {
-                            cloudData.smartWalletData.history.forEach(cloudTx => {
-                                const exists = smartWalletData.history.some(localTx =>
-                                    localTx.date === cloudTx.date && localTx.amount === cloudTx.amount
-                                );
-                                if (!exists) {
-                                    smartWalletData.history.push(cloudTx);
-                                }
-                            });
-                            // Update balance to match cloud if cloud seems to have more data/is newer
-                            smartWalletData.balance = cloudData.smartWalletData.balance;
+                        // 2. Wallet: دمج المعاملات (transactions)
+                        if (cloudData.smartWalletData) {
+                            // دمج المعاملات
+                            if (cloudData.smartWalletData.transactions) {
+                                cloudData.smartWalletData.transactions.forEach(cloudTx => {
+                                    const exists = smartWalletData.transactions.some(localTx =>
+                                        localTx.timestamp === cloudTx.timestamp
+                                    );
+                                    if (!exists) {
+                                        smartWalletData.transactions.push(cloudTx);
+                                    }
+                                });
+                            }
+
+                            // تحديث الرصيد
+                            if (cloudData.smartWalletData.balance !== undefined) {
+                                smartWalletData.balance = cloudData.smartWalletData.balance;
+                            }
                         }
 
-                        // 3. Attendance: Merge records
+                        // 3. Attendance: دمج السجلات
                         if (cloudData.attendanceData && cloudData.attendanceData.records) {
                             Object.keys(cloudData.attendanceData.records).forEach(date => {
                                 if (!attendanceData.records[date]) {
@@ -6035,6 +6125,10 @@
                                         attendanceData.activities.push(cloudAct);
                                     }
                                 });
+                            }
+                            // دمج معلومات مكان العمل
+                            if (cloudData.attendanceData.workplace) {
+                                attendanceData.workplace = cloudData.attendanceData.workplace;
                             }
                         }
 
