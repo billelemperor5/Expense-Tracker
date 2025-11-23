@@ -6018,14 +6018,20 @@
                                     const cloudPeriod = cloudData.allExpensePeriods[periodId];
                                     const localPeriod = allExpensePeriods[periodId];
 
-                                    // دمج العناصر
+                                    // دمج العناصر - تحديث القيم من السحابة
                                     if (cloudPeriod.items) {
                                         cloudPeriod.items.forEach(cloudItem => {
-                                            const exists = localPeriod.items.some(localItem =>
+                                            const localItemIndex = localPeriod.items.findIndex(localItem =>
                                                 localItem.category === cloudItem.category
                                             );
-                                            if (!exists) {
+
+                                            if (localItemIndex === -1) {
+                                                // عنصر جديد من السحابة - إضافته
                                                 localPeriod.items.push(cloudItem);
+                                            } else {
+                                                // عنصر موجود - تحديث القيم من السحابة (الأحدث)
+                                                localPeriod.items[localItemIndex].budget = cloudItem.budget;
+                                                localPeriod.items[localItemIndex].actual = cloudItem.actual;
                                             }
                                         });
                                     }
@@ -6043,8 +6049,8 @@
                                         });
                                     }
 
-                                    // تحديث الدخل إذا كان أكبر
-                                    if (cloudPeriod.totalIncome > localPeriod.totalIncome) {
+                                    // تحديث الدخل من السحابة (الأحدث)
+                                    if (cloudPeriod.totalIncome !== undefined) {
                                         localPeriod.totalIncome = cloudPeriod.totalIncome;
                                     }
                                 }
@@ -6056,14 +6062,19 @@
                             // تحديث البيانات الحالية
                             expenseManagerData = getPeriodData(currentPeriodId);
                         } else if (cloudData.expenseManagerData && cloudData.expenseManagerData.items) {
-                            // للتوافق مع النسخ القديمة
+                            // للتوافق مع النسخ القديمة - تحديث القيم من السحابة
                             cloudData.expenseManagerData.items.forEach(cloudItem => {
-                                const exists = expenseManagerData.items.some(localItem =>
-                                    (localItem.timestamp && localItem.timestamp === cloudItem.timestamp) ||
-                                    (localItem.category === cloudItem.category && localItem.actual === cloudItem.actual && localItem.date === cloudItem.date)
+                                const localItemIndex = expenseManagerData.items.findIndex(localItem =>
+                                    localItem.category === cloudItem.category
                                 );
-                                if (!exists) {
+
+                                if (localItemIndex === -1) {
+                                    // عنصر جديد من السحابة - إضافته
                                     expenseManagerData.items.push(cloudItem);
+                                } else {
+                                    // عنصر موجود - تحديث القيم من السحابة (الأحدث)
+                                    expenseManagerData.items[localItemIndex].budget = cloudItem.budget;
+                                    expenseManagerData.items[localItemIndex].actual = cloudItem.actual;
                                 }
                             });
 
@@ -6080,7 +6091,8 @@
                                 });
                             }
 
-                            if (cloudData.expenseManagerData.totalIncome > expenseManagerData.totalIncome) {
+                            // تحديث الدخل من السحابة (الأحدث)
+                            if (cloudData.expenseManagerData.totalIncome !== undefined) {
                                 expenseManagerData.totalIncome = cloudData.expenseManagerData.totalIncome;
                             }
                         }
