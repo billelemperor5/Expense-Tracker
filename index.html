@@ -4630,7 +4630,7 @@
 
             if (viewName === 'home') {
                 const greetingEl = document.getElementById('greeting');
-                const userName = localStorage.getItem('user_name') || 'محمد';
+                const userName = localStorage.getItem('user_name') || ' ';
                 if (greetingEl) greetingEl.innerText = t.greeting_welcome + "، " + userName + " 👋";
 
                 const dateElement = document.getElementById('currentDateText');
