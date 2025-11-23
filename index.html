@@ -6014,12 +6014,13 @@
                                     // فترة جديدة من السحابة
                                     allExpensePeriods[periodId] = cloudData.allExpensePeriods[periodId];
                                 } else {
-                                    // دمج البيانات للفترة الموجودة
+                                    // مزامنة ذكية: دمج البيانات من الجهازين
                                     const cloudPeriod = cloudData.allExpensePeriods[periodId];
                                     const localPeriod = allExpensePeriods[periodId];
 
-                                    // دمج العناصر - تحديث القيم من السحابة
+                                    // 1. مزامنة العناصر (Items) - دمج ذكي
                                     if (cloudPeriod.items) {
+                                        // أولاً: تحديث/إضافة العناصر من السحابة
                                         cloudPeriod.items.forEach(cloudItem => {
                                             const localItemIndex = localPeriod.items.findIndex(localItem =>
                                                 localItem.category === cloudItem.category
@@ -6027,16 +6028,42 @@
 
                                             if (localItemIndex === -1) {
                                                 // عنصر جديد من السحابة - إضافته
-                                                localPeriod.items.push(cloudItem);
+                                                localPeriod.items.push({
+                                                    ...cloudItem,
+                                                    lastModified: cloudItem.lastModified || Date.now()
+                                                });
                                             } else {
-                                                // عنصر موجود - تحديث القيم من السحابة (الأحدث)
-                                                localPeriod.items[localItemIndex].budget = cloudItem.budget;
-                                                localPeriod.items[localItemIndex].actual = cloudItem.actual;
+                                                // عنصر موجود - مقارنة التواريخ
+                                                const localItem = localPeriod.items[localItemIndex];
+                                                const cloudTimestamp = cloudItem.lastModified || 0;
+                                                const localTimestamp = localItem.lastModified || 0;
+
+                                                // أخذ الأحدث
+                                                if (cloudTimestamp >= localTimestamp) {
+                                                    // السحابة أحدث - تحديث من السحابة
+                                                    localPeriod.items[localItemIndex].budget = cloudItem.budget;
+                                                    localPeriod.items[localItemIndex].actual = cloudItem.actual;
+                                                    localPeriod.items[localItemIndex].lastModified = cloudItem.lastModified;
+                                                }
+                                                // إذا كان المحلي أحدث، نبقي على القيم المحلية
+                                            }
+                                        });
+
+                                        // ثانياً: إضافة العناصر المحلية التي لا توجد في السحابة
+                                        localPeriod.items.forEach(localItem => {
+                                            const existsInCloud = cloudPeriod.items.some(cloudItem =>
+                                                cloudItem.category === localItem.category
+                                            );
+                                            if (!existsInCloud) {
+                                                // عنصر محلي جديد - سيتم رفعه في النسخة الاحتياطية القادمة
+                                                if (!localItem.lastModified) {
+                                                    localItem.lastModified = Date.now();
+                                                }
                                             }
                                         });
                                     }
 
-                                    // دمج سجل الأنشطة
+                                    // 2. مزامنة سجل الأنشطة (Activity Log)
                                     if (cloudPeriod.activityLog) {
                                         if (!localPeriod.activityLog) localPeriod.activityLog = [];
                                         cloudPeriod.activityLog.forEach(cloudLog => {
@@ -6049,9 +6076,13 @@
                                         });
                                     }
 
-                                    // تحديث الدخل من السحابة (الأحدث)
+                                    // 3. مزامنة الدخل الكلي (Total Income) - أخذ الأكبر
                                     if (cloudPeriod.totalIncome !== undefined) {
-                                        localPeriod.totalIncome = cloudPeriod.totalIncome;
+                                        // أخذ القيمة الأكبر (الأكثر واقعية)
+                                        localPeriod.totalIncome = Math.max(
+                                            localPeriod.totalIncome || 0,
+                                            cloudPeriod.totalIncome || 0
+                                        );
                                     }
                                 }
                             });
