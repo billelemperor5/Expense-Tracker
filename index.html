@@ -5934,6 +5934,11 @@
 
             const result = await window.firebaseAuth.backupData(dataToBackup);
 
+            // تتبع: طباعة البيانات المحفوظة
+            console.log('📤 Backup Data:', dataToBackup);
+            console.log('📤 allExpensePeriods:', allExpensePeriods);
+            console.log('📤 Result:', result);
+
             if (result.success) {
                 const date = new Date(result.timestamp).toLocaleString(currentLang);
                 localStorage.setItem('last_backup_date', date);
@@ -6002,36 +6007,67 @@
                 async () => {
                     const result = await window.firebaseAuth.restoreData();
 
+                    // تتبع: طباعة البيانات المسترجعة
+                    console.log('📥 Restore Result:', result);
+                    console.log('📥 Cloud Data:', result.data);
+
                     if (result.success) {
                         const cloudData = result.data;
 
+                        // تتبع: طباعة التفاصيل
+                        console.log('📥 cloudData.allExpensePeriods:', cloudData.allExpensePeriods);
+                        console.log('📥 Local allExpensePeriods BEFORE:', JSON.parse(JSON.stringify(allExpensePeriods)));
+
                         // Merge Logic
-                        // 1. Expenses: استرجاع جميع الفترات
+                        // 1. Expenses: استبدال كامل لجميع الفترات
                         if (cloudData.allExpensePeriods) {
-                            // دمج جميع الفترات
-                            Object.keys(cloudData.allExpensePeriods).forEach(periodId => {
-                                if (!allExpensePeriods[periodId]) {
-                                    // فترة جديدة من السحابة
-                                    allExpensePeriods[periodId] = cloudData.allExpensePeriods[periodId];
-                                } else {
-                                    // استبدال كامل: النسخة الاحتياطية من السحابة = الحقيقة المطلقة
-                                    // نستبدل البيانات المحلية بالكامل بما في السحابة
-                                    allExpensePeriods[periodId] = cloudData.allExpensePeriods[periodId];
-                                }
-                            });
+                            // استبدال كامل: حذف جميع الفترات المحلية واستبدالها بما في السحابة
+                            allExpensePeriods = cloudData.allExpensePeriods;
+
+                            console.log('✅ allExpensePeriods AFTER replace:', allExpensePeriods);
 
                             // حفظ جميع الفترات
                             localStorage.setItem('allExpensePeriods', JSON.stringify(allExpensePeriods));
 
+                            // تحديد الفترة الحالية بناءً على ما في السحابة
+                            const availablePeriods = Object.keys(allExpensePeriods);
+
+                            if (availablePeriods.includes('PERMANENT')) {
+                                // إذا كان هناك PERMANENT، استخدمه
+                                currentPeriodId = 'PERMANENT';
+                                console.log('✅ Switching to PERMANENT mode');
+                            } else if (availablePeriods.length > 0) {
+                                // استخدم أحدث فترة متاحة
+                                currentPeriodId = availablePeriods.sort().reverse()[0];
+                                console.log('✅ Using latest period:', currentPeriodId);
+                            } else {
+                                // لا توجد فترات، استخدم الشهر الحالي
+                                currentPeriodId = getCurrentMonthId();
+                                console.log('✅ No periods found, using current month:', currentPeriodId);
+                            }
+
                             // تحديث البيانات الحالية
                             expenseManagerData = getPeriodData(currentPeriodId);
+
+                            console.log('✅ expenseManagerData AFTER getPeriodData:', expenseManagerData);
                         } else if (cloudData.expenseManagerData) {
                             // للتوافق مع النسخ القديمة - استبدال كامل
                             expenseManagerData = cloudData.expenseManagerData;
 
-                            // حفظ في الفترة الحالية
+                            // حذف جميع الفترات القديمة واستبدالها بالفترة الحالية فقط
+                            allExpensePeriods = {};
                             allExpensePeriods[currentPeriodId] = expenseManagerData;
                             localStorage.setItem('allExpensePeriods', JSON.stringify(allExpensePeriods));
+
+                            console.log('✅ Using old format - expenseManagerData:', expenseManagerData);
+                        } else {
+                            console.warn('⚠️ No expense data in cloud!');
+                        }
+
+                        // تحديث وضع التوزيع من الإعدادات المسترجعة
+                        if (cloudData.settings && cloudData.settings.expense_distribution_mode) {
+                            localStorage.setItem('expense_distribution_mode', cloudData.settings.expense_distribution_mode);
+                            console.log('✅ Updated expense_distribution_mode:', cloudData.settings.expense_distribution_mode);
                         }
 
                         // 2. Wallet: استبدال كامل
@@ -6042,6 +6078,25 @@
                         // 3. Attendance: استبدال كامل
                         if (cloudData.attendanceData) {
                             attendanceData = cloudData.attendanceData;
+                        }
+
+                        // 4. Settings: استرجاع جميع الإعدادات
+                        if (cloudData.settings) {
+                            if (cloudData.settings.lang) {
+                                currentLang = cloudData.settings.lang;
+                                localStorage.setItem('selectedLanguage', currentLang);
+                                console.log('✅ Updated language:', currentLang);
+                            }
+                            if (cloudData.settings.theme) {
+                                currentTheme = cloudData.settings.theme;
+                                localStorage.setItem('selectedTheme', currentTheme);
+                                console.log('✅ Updated theme:', currentTheme);
+                            }
+                            if (cloudData.settings.currency) {
+                                currentCurrency = cloudData.settings.currency;
+                                localStorage.setItem('selectedCurrency', currentCurrency);
+                                console.log('✅ Updated currency:', currentCurrency);
+                            }
                         }
 
                         // Save merged data
