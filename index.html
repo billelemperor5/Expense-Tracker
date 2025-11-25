@@ -23,6 +23,7 @@
             --shadow-color: rgba(2, 6, 23, .04);
             --border-color: #e2e8f0;
             --primary-soft: rgba(139, 92, 246, 0.15);
+            --backup-accent: #0f172a;
         }
 
         body.dark {
@@ -704,8 +705,8 @@
         }
 
         .backup-toast .pill {
-            background: #fef3c7;
-            color: #d97706;
+            background: color-mix(in srgb, var(--backup-accent) 12%, transparent);
+            color: var(--backup-accent);
             border-radius: 10px;
             padding: 4px 8px;
             font-size: 11px;
@@ -714,17 +715,17 @@
 
         .backup-toast button {
             border: none;
-            background: #f59e0b;
+            background: var(--backup-accent);
             color: white;
             padding: 8px 10px;
             border-radius: 10px;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+            box-shadow: 0 4px 12px color-mix(in srgb, var(--backup-accent) 30%, transparent);
         }
 
         .dock-item.backup-alert {
-            color: #f59e0b;
+            color: var(--backup-accent);
         }
 
         .dock-item.backup-alert::before {
@@ -734,10 +735,10 @@
             right: 10px;
             width: 10px;
             height: 10px;
-            background: #f59e0b;
+            background: var(--backup-accent);
             border-radius: 50%;
-            border: 2px solid #fff;
-            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
+            border: 2px solid var(--surface);
+            box-shadow: 0 0 0 4px color-mix(in srgb, var(--backup-accent) 30%, transparent);
         }
 
         .theme-card.active,
@@ -1675,6 +1676,7 @@
                 today_date: 'تاريخ اليوم', calendar_title: 'التقويم',
                 days_short: ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'],
                 months_long: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'],
+                months_short: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'],
                 profile_title: 'الملف الشخصي', net_balance: 'صافي الرصيد',
                 financial_health: 'الصحة المالية', budget_used: 'الميزانية المستهلكة', premium_member: 'عضو مميز',
                 login_title: 'تسجيل الدخول', signup_title: 'إنشاء حساب',
@@ -1873,6 +1875,7 @@
                 today_date: 'Today\'s Date', calendar_title: 'Calendar',
                 days_short: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
                 months_long: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                months_short: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                 profile_title: 'Profile Overview', net_balance: 'Net Balance',
                 financial_health: 'Financial Health', budget_used: 'Budget Used', premium_member: 'Premium Member',
                 login_title: 'Login', signup_title: 'Sign Up',
@@ -2071,6 +2074,7 @@
                 today_date: 'Date d\'aujourd\'hui', calendar_title: 'Calendrier',
                 days_short: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
                 months_long: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+                months_short: ['Janv', 'Févr', 'Mars', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'],
                 profile_title: 'Profil', net_balance: 'Solde Net',
                 financial_health: 'Santé Financière', budget_used: 'Budget Utilisé', premium_member: 'Membre Premium',
                 login_title: 'Connexion', signup_title: 'S\'inscrire',
@@ -4808,7 +4812,7 @@
             });
 
             // Calendar Rendering
-            const monthName = t.months_long[month];
+            const monthName = (currentLang === 'ar' ? t.months_long : (t.months_short || t.months_long))[month];
             const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
 
             let daysHTML = '';
@@ -4892,9 +4896,11 @@
                 if (absent > maxVal) maxVal = absent;
                 if (present > maxVal) maxVal = present;
 
+                const monthLabel = (currentLang === 'ar' ? t.months_long : (t.months_short || t.months_long))[m];
+                const monthFull = t.months_long[m];
                 chartStats.push({
-                    month: t.months_long[m], // Full name as requested
-                    fullMonth: t.months_long[m],
+                    month: monthLabel,
+                    fullMonth: monthFull,
                     absent,
                     present
                 });
@@ -5445,6 +5451,24 @@
             'default-dark': { name: 'داكن', type: 'dark', colors: { '--primary': '#22c55e', '--accent': '#3b82f6', '--bg': '#0f172a', '--surface': '#1e293b' } },
         };
 
+        // Contrasting colors for backup notifications per theme
+        const backupAccentByTheme = {
+            'lavender-light': '#0f172a',
+            'default-light': '#0f172a',
+            'ocean-light': '#f97316',
+            'forest-light': '#0ea5e9',
+            'sunset-light': '#0ea5e9',
+            'rose-light': '#16a34a',
+            'indigo-light': '#f59e0b',
+            'mint-light': '#dc2626',
+            'citrus-light': '#1d4ed8',
+            'royal-light': '#d97706',
+            'sand-light': '#2563eb',
+            'blush-light': '#0f172a',
+            'carbon-light': '#22c55e',
+            'default-dark': '#f59e0b',
+        };
+
         const currencies = {
             'DZD': {
                 symbols: { ar: 'د.ج', en: 'DZD', fr: 'DA' },
@@ -5483,6 +5507,8 @@
             Object.entries(theme.colors).forEach(([key, value]) => {
                 root.style.setProperty(key, value);
             });
+            const backupAccent = backupAccentByTheme[themeName] || theme.colors['--accent'] || '#0f172a';
+            root.style.setProperty('--backup-accent', backupAccent);
             localStorage.setItem('app-theme', themeName);
             currentTheme = themeName;
             if (currentView === 'themes') renderView('themes');
