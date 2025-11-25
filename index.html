@@ -2535,6 +2535,7 @@
                             const cloudDate = new Date(result.timestamp).toLocaleString(currentLang);
                             localStorage.setItem('last_backup_date', cloudDate);
                             localStorage.setItem('last_cloud_backup_ts', result.timestamp);
+                            localStorage.setItem('last_seen_backup_ts', result.timestamp);
                             const dateEl = document.getElementById('lastBackupDatePage');
                             if (dateEl) dateEl.textContent = cloudDate;
                         }
@@ -6683,7 +6684,8 @@
                 if (attendanceEl) attendanceEl.textContent = attendanceCount;
 
                 showSuccessMessage(t.backup_success);
-                localStorage.setItem('has_new_backup', 'true');
+                // Backup تم من نفس الجهاز: لا نظهر إشعار "جديد"
+                localStorage.setItem('has_new_backup', 'false');
                 updateBackupIndicators();
             } else {
                 // Show error in professional modal
