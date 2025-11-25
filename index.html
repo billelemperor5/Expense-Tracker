@@ -3765,12 +3765,15 @@
                 rowsContent = expenseManagerData.items.map((item, index) => {
                     const diff = item.budget - item.actual;
                     const isOverBudget = diff < 0;
-                    const diffColor = isOverBudget ? '#ef4444' : '#10b981';
+                    const diffColor = isOverBudget ? '#ef4444' : '#2563eb'; // red alert when over budget
                     const percent = Math.min((item.actual / (item.budget || 1)) * 100, 100);
-                    const progressColor = isOverBudget ? '#ef4444' : '#3b82f6'; // Red if over, Blue if under
+                    const progressColor = '#2563eb'; // keep progress neutral (no red alert color)
+                    const actualColor = '#f97316';
+                    const actualBg = `color-mix(in srgb, ${actualColor} 12%, var(--surface))`;
+                    const actualBorder = `color-mix(in srgb, ${actualColor} 25%, var(--border-color))`;
 
                     return `
-                    <div class="expense-row" style="display: grid; grid-template-columns: 1.5fr 0.8fr 1fr 0.8fr; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--border-color); align-items: center; transition: background 0.2s;">
+                    <div class="expense-row" onclick="openCategoryDetails(${index})" style="display: grid; grid-template-columns: 1.5fr 0.8fr 1fr 0.8fr; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--border-color); align-items: center; transition: background 0.2s; cursor: pointer;">
                         
                         <!-- Category Section with Progress -->
                         <div style="text-align: start; padding-inline-start: 8px;">
@@ -3790,10 +3793,10 @@
 
                         <!-- Actual (Editable) -->
                         <div style="text-align: center;">
-                            <button onclick="openExpenseEditModal(${index})" class="btn" style="
-                                background: ${isOverBudget ? '#fef2f2' : '#eff6ff'}; 
-                                color: ${isOverBudget ? '#ef4444' : '#3b82f6'};
-                                border: 1px solid ${isOverBudget ? '#fca5a5' : 'var(--border-color)'}; 
+                            <button onclick="event.stopPropagation(); openExpenseEditModal(${index})" class="btn" style="
+                                background: ${actualBg}; 
+                                color: ${actualColor};
+                                border: 1px solid ${actualBorder}; 
                                 padding: 8px 12px; 
                                 border-radius: 10px; 
                                 font-size: 13px; 
@@ -6030,6 +6033,20 @@
         </div>
     </div>
 
+    <!-- Category Details Modal -->
+    <div id="categoryDetailsModal" class="dev-modal-overlay" onclick="if(event.target === this) closeCategoryDetails()" style="z-index: 2400; display: none;">
+        <div class="dev-modal" style="max-width: 420px; width: 95%; padding: 0; overflow: hidden;">
+            <div style="padding: 18px 18px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color);">
+                <div>
+                    <div id="catDetailsLabel" style="font-size: 13px; color: var(--text-muted); margin-bottom: 4px;"></div>
+                    <div id="catDetailsTitle" style="font-weight: 800; font-size: 18px; color: var(--text);"></div>
+                </div>
+                <button onclick="closeCategoryDetails()" class="btn icon-btn" style="width: 32px; height: 32px; background: var(--bg); border-radius: 10px; color: var(--text-muted);"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="catDetailsBody" style="padding: 18px; display: flex; flex-direction: column; gap: 14px;"></div>
+        </div>
+    </div>
+
     <!-- Smart Actions Menu -->
     <div id="smartActionsOverlay" class="smart-actions-overlay"
         onclick="if(event.target === this) toggleSmartActions()">
@@ -6234,6 +6251,83 @@
             modal.style.display = 'flex';
             modal.offsetHeight;
             modal.classList.add('open');
+        }
+
+        // --- Category Details Modal ---
+        function openCategoryDetails(index) {
+            const item = expenseManagerData.items[index];
+            if (!item) return;
+            const t = translations[currentLang];
+            const cur = currencies[currentCurrency];
+
+            const diff = item.budget - item.actual;
+            const isOver = diff < 0;
+            const diffColor = isOver ? '#ef4444' : '#2563eb';
+            const diffLabel = diff;
+            const actualColor = '#f97316';
+            const actualBg = `color-mix(in srgb, ${actualColor} 12%, var(--surface))`;
+            const actualBorder = `color-mix(in srgb, ${actualColor} 25%, var(--border-color))`;
+            const percentRaw = item.budget > 0 ? (item.actual / item.budget) * 100 : 0;
+            const percent = Math.max(0, Math.min(percentRaw, 999));
+
+            const modal = document.getElementById('categoryDetailsModal');
+            const body = document.getElementById('catDetailsBody');
+            const title = document.getElementById('catDetailsTitle');
+            const label = document.getElementById('catDetailsLabel');
+
+            title.textContent = item.category;
+            label.textContent = t.lbl_details || 'Details';
+
+            body.innerHTML = `
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1; background: var(--bg); border:1px solid var(--border-color); border-radius: 12px; padding: 12px;">
+                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">${t.col_budget}</div>
+                        <div style="font-weight: 800; font-size: 18px; color: var(--text);">${cur.symbol} ${item.budget}</div>
+                    </div>
+                    <div style="flex:1; background: ${actualBg}; border:1px solid ${actualBorder}; border-radius: 12px; padding: 12px;">
+                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px; display:flex; justify-content: space-between; align-items:center;">
+                            <span>${t.col_actual}</span>
+                            <button onclick="event.stopPropagation(); openExpenseEditModal(${index}); closeCategoryDetails();" class="btn" style="font-size:11px; color: var(--primary); background: transparent; border:none; display:flex; align-items:center; gap:6px;">
+                                <i class="fas fa-pen"></i> ${t.edit || ''}
+                            </button>
+                        </div>
+                        <div style="font-weight: 800; font-size: 18px; color: ${actualColor};">${cur.symbol} ${item.actual}</div>
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1; background: var(--bg); border:1px solid var(--border-color); border-radius: 12px; padding: 12px;">
+                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">${t.col_diff}</div>
+                        <div style="font-weight: 800; font-size: 18px; color: ${diffColor};">${cur.symbol} ${diffLabel}</div>
+                    </div>
+                    <div style="flex:1; background: var(--bg); border:1px solid var(--border-color); border-radius: 12px; padding: 12px;">
+                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">% ${t.col_actual}</div>
+                        <div style="font-weight: 800; font-size: 18px; color: var(--text);">${percent.toFixed(1)}%</div>
+                    </div>
+                </div>
+                <div>
+                    <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 8px; font-weight: 700; font-size: 12px; color: var(--text-muted);">
+                        <span>${t.col_actual}</span>
+                        <span>${percent.toFixed(1)}%</span>
+                    </div>
+                    <div style="height: 10px; background: var(--bg); border-radius: 999px; overflow: hidden; border: 1px solid var(--border-color);">
+                        <div style="width: ${Math.min(percent, 120)}%; max-width: 120%; height: 100%; background: var(--primary);"></div>
+                    </div>
+                </div>
+                <div style="display:flex; gap: 10px; color: var(--text-muted); font-size: 12px; font-weight: 600;">
+                    <div style="display:flex; align-items:center; gap:6px;"><span style="width:10px; height:10px; background:#fbcfe8; border-radius:50%;"></span>${t.col_budget}</div>
+                    <div style="display:flex; align-items:center; gap:6px;"><span style="width:10px; height:10px; background:#3b82f6; border-radius:50%;"></span>${t.col_actual}</div>
+                </div>
+            `;
+
+            modal.style.display = 'flex';
+            modal.offsetHeight;
+            modal.classList.add('open');
+        }
+
+        function closeCategoryDetails() {
+            const modal = document.getElementById('categoryDetailsModal');
+            modal.classList.remove('open');
+            setTimeout(() => { modal.style.display = 'none'; }, 250);
         }
 
         function closeQuickExpenseModal() {
