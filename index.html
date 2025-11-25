@@ -680,6 +680,66 @@
             border-color: rgba(255, 255, 255, 0.1);
         }
 
+        .backup-toast {
+            position: fixed;
+            top: 90px;
+            inset-inline-end: 20px;
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 14px 16px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1200;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .backup-toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .backup-toast .pill {
+            background: #fef3c7;
+            color: #d97706;
+            border-radius: 10px;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .backup-toast button {
+            border: none;
+            background: #f59e0b;
+            color: white;
+            padding: 8px 10px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+        }
+
+        .dock-item.backup-alert {
+            color: #f59e0b;
+        }
+
+        .dock-item.backup-alert::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            width: 10px;
+            height: 10px;
+            background: #f59e0b;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
+        }
+
         .theme-card.active,
         .lang-card.active {
             border-color: var(--primary) !important;
@@ -1565,6 +1625,30 @@
                 log_budget_update: 'تحديث الميزانية', log_expense_update: 'تسجيل مصروف', log_expense_diff: 'تعديل مصروف',
                 edit_expense_title: 'تعديل المصروف', lbl_expense_details: 'تفاصيل المصروف',
                 lbl_previous_actual: 'الفعلي الحالي', lbl_new_actual: 'الفعلي الجديد', lbl_add_amount: 'إضافة مبلغ',
+                // Insights
+                insights_title: 'تحليل المصاريف',
+                lbl_total_budget: 'الميزانية الكلية',
+                lbl_total_spent: 'إجمالي المصروف',
+                lbl_remaining_budget: 'المتبقي من الميزانية',
+                lbl_top_spenders: 'الأكثر استهلاكاً',
+                lbl_budget_health: 'صحة الميزانية',
+                lbl_health_score: 'نقاط الصحة المالية',
+                lbl_spending_breakdown: 'تفاصيل الإنفاق',
+                status_safe: 'آمن',
+                status_warning: 'تحذير',
+                status_critical: 'خطر',
+                health_msg_safe: 'أنت تدير ميزانيتك بشكل ممتاز!',
+                health_msg_warning: 'انتبه، لقد استهلكت جزءاً كبيراً من الميزانية.',
+                health_msg_critical: 'لقد تجاوزت الحد المسموح به، يرجى مراجعة المصاريف.',
+
+                // End of Month
+                eom_report_title: 'تقرير إغلاق الشهر',
+                eom_msg: 'لقد وصلت لنهاية الشهر. إليك ملخص أدائك المالي:',
+                eom_final_spent: 'الإنفاق النهائي',
+                eom_final_remaining: 'الرصيد المتبقي النهائي',
+                eom_good_job: 'عمل رائع! أنهيت الشهر برصيد إيجابي.',
+                eom_warning: 'لقد تجاوزت الميزانية هذا الشهر. حظاً أوفر الشهر القادم.',
+
                 info_title: 'دليل استخدام إدارة المصاريف',
                 info_step1_title: 'إعداد الميزانية', info_step1_desc: 'قم بتحديد دخلك الشهري وتوزيع الميزانية على الفئات المختلفة.',
                 info_step2_title: 'تتبع المصاريف', info_step2_desc: 'سجل مصاريفك الفعلية لكل فئة وقارنها بالميزانية المحددة.',
@@ -1676,6 +1760,8 @@
                 theme_lavender: 'خزامى (الافتراضي)', theme_green: 'أخضر', theme_default: 'أخضر', theme_ocean: 'محيط', theme_forest: 'غابة', theme_sunset: 'غروب',
                 about_dev_title: 'تم التطوير بواسطة', about_role: 'مطور تطبيقات', about_desc_long: 'تطبيق متكامل لإدارة المصاريف الشخصية ومتابعة الميزانية بدقة واحترافية. يهدف التطبيق إلى تسهيل حياتك المالية.',
                 page_construction: 'صفحة قيد الإنشاء', theme_rose: 'وردي', theme_indigo: 'نيلي', theme_mint: 'نعناع',
+                theme_citrus: 'حمضيات', theme_royal: 'ملكي', theme_sand: 'رملي', theme_blush: 'وردي فاخر', theme_carbon: 'كربون',
+                backup_new_available: 'هناك نسخة احتياطية جديدة جاهزة',
                 page_construction: 'صفحة قيد الإنشاء',
                 setup_workspace_title: 'إعداد مساحة العمل',
                 setup_workspace_desc: 'قم بإعداد ملفك الشخصي للعمل لبدء تتبع الحضور والغياب بشكل احترافي.',
@@ -1737,6 +1823,30 @@
                 log_budget_update: 'Budget Updated', log_expense_update: 'Expense Recorded', log_expense_diff: 'Expense Adjustment',
                 edit_expense_title: 'Edit Expense', lbl_expense_details: 'Expense Details',
                 lbl_previous_actual: 'Current Actual', lbl_new_actual: 'New Actual', lbl_add_amount: 'Add Amount',
+                // Insights
+                insights_title: 'Expense Insights',
+                lbl_total_budget: 'Total Budget',
+                lbl_total_spent: 'Total Spent',
+                lbl_remaining_budget: 'Remaining Budget',
+                lbl_top_spenders: 'Top Spenders',
+                lbl_budget_health: 'Budget Health',
+                lbl_health_score: 'Financial Health Score',
+                lbl_spending_breakdown: 'Spending Breakdown',
+                status_safe: 'Safe',
+                status_warning: 'Warning',
+                status_critical: 'Critical',
+                health_msg_safe: 'You are managing your budget excellently!',
+                health_msg_warning: 'Be careful, you have used a large portion of your budget.',
+                health_msg_critical: 'You have exceeded the limit, please review your expenses.',
+
+                // End of Month
+                eom_report_title: 'Monthly Closing Report',
+                eom_msg: 'You reached the end of the month. Here is your financial summary:',
+                eom_final_spent: 'Final Spending',
+                eom_final_remaining: 'Final Remaining Balance',
+                eom_good_job: 'Great job! You ended the month with a positive balance.',
+                eom_warning: 'You exceeded the budget this month. Better luck next time.',
+
                 info_title: 'Expense Management Guide',
                 info_step1_title: 'Setup Budget', info_step1_desc: 'Define your monthly income and allocate budget to categories.',
                 info_step2_title: 'Track Expenses', info_step2_desc: 'Record actual expenses and compare them with your budget.',
@@ -1863,6 +1973,8 @@
                 theme_lavender: 'Lavender (Default)', theme_green: 'Green', theme_default: 'Green', theme_ocean: 'Ocean', theme_forest: 'Forest', theme_sunset: 'Sunset',
                 about_dev_title: 'Developed By', about_role: 'App Developer', about_desc_long: 'A comprehensive application for managing personal expenses and tracking your budget with precision and professionalism.',
                 page_construction: 'Page under construction', theme_rose: 'Rose', theme_indigo: 'Indigo', theme_mint: 'Mint',
+                theme_citrus: 'Citrus', theme_royal: 'Royal', theme_sand: 'Sandstone', theme_blush: 'Blush', theme_carbon: 'Carbon',
+                backup_new_available: 'New cloud backup available',
                 page_construction: 'Page under construction',
                 setup_workspace_title: 'Workspace Setup',
                 setup_workspace_desc: 'Setup your profile to start tracking attendance professionally.',
@@ -1909,6 +2021,30 @@
                 log_budget_update: 'Budget Mis à jour', log_expense_update: 'Dépense Enregistrée', log_expense_diff: 'Ajustement des dépenses',
                 edit_expense_title: 'Modifier la dépense', lbl_expense_details: 'Détails de la dépense',
                 lbl_previous_actual: 'Réel Précédent', lbl_new_actual: 'Nouveau Réel', lbl_add_amount: 'Ajouter un montant',
+                // Insights
+                insights_title: 'Analyse des Dépenses',
+                lbl_total_budget: 'Budget Total',
+                lbl_total_spent: 'Total Dépensé',
+                lbl_remaining_budget: 'Budget Restant',
+                lbl_top_spenders: 'Plus Grosses Dépenses',
+                lbl_budget_health: 'Santé Budgétaire',
+                lbl_health_score: 'Score de Santé Financière',
+                lbl_spending_breakdown: 'Détails des Dépenses',
+                status_safe: 'Sûr',
+                status_warning: 'Attention',
+                status_critical: 'Critique',
+                health_msg_safe: 'Vous gérez votre budget excellemment !',
+                health_msg_warning: 'Attention, vous avez utilisé une grande partie de votre budget.',
+                health_msg_critical: 'Vous avez dépassé la limite, veuillez revoir vos dépenses.',
+
+                // End of Month
+                eom_report_title: 'Rapport de Clôture Mensuel',
+                eom_msg: 'Vous avez atteint la fin du mois. Voici votre résumé financier :',
+                eom_final_spent: 'Dépenses Finales',
+                eom_final_remaining: 'Solde Restant Final',
+                eom_good_job: 'Bon travail ! Vous avez terminé le mois avec un solde positif.',
+                eom_warning: 'Vous avez dépassé le budget ce mois-ci. Meilleure chance la prochaine fois.',
+
                 info_title: 'Guide de Gestion des Dépenses',
                 info_step1_title: 'Configuration', info_step1_desc: 'Définissez vos revenus et allouez un budget aux catégories.',
                 info_step2_title: 'Suivi', info_step2_desc: 'Enregistrez les dépenses réelles et comparez-les au budget.',
@@ -2035,6 +2171,8 @@
                 theme_lavender: 'Lavande (Défaut)', theme_green: 'Vert', theme_default: 'Vert', theme_ocean: 'Océan', theme_forest: 'Forêt', theme_sunset: 'Coucher de soleil',
                 about_dev_title: 'Développé Par', about_role: 'Développeur d\'applications', about_desc_long: 'Une application complète pour gérer les dépenses personnelles et suivre votre budget avec précision et professionnalisme.',
                 page_construction: 'Page en construction', theme_rose: 'Rose', theme_indigo: 'Niلي', theme_mint: 'Menthe',
+                theme_citrus: 'Agrumes', theme_royal: 'Royal', theme_sand: 'Sable', theme_blush: 'Blush', theme_carbon: 'Carbone',
+                backup_new_available: 'Nouvelle sauvegarde disponible',
                 page_construction: 'Page en construction',
                 setup_workspace_title: 'Configuration Lieu de Travail',
                 setup_workspace_desc: 'Configurez votre profil pour commencer le suivi de présence.',
@@ -2101,7 +2239,7 @@
         }
 
         function triggerEntranceAnimations() {
-            const elements = document.querySelectorAll('#mainContent .welcome-card, #mainContent .card, #mainContent .details-card, #mainContent .glass-header, #mainContent .timeline-item, #mainContent .legend-item, #mainContent .kpi, #mainContent h3, #mainContent h4, #mainContent .grid > div');
+            const elements = document.querySelectorAll('#mainContent .welcome-card, #mainContent .card, #mainContent .details-card, #mainContent .glass-header, #mainContent .timeline-item, #mainContent .legend-item, #mainContent .kpi, #mainContent h3, #mainContent h4, #mainContent .grid > div, #mainContent .stat-card, #mainContent .calendar-wrapper, #mainContent .chart-bar-group, #mainContent .action-buttons .btn');
             elements.forEach((el, index) => {
                 el.classList.add('animate-enter');
                 el.style.animationDelay = `${index * 0.05}s`;
@@ -2238,6 +2376,7 @@
         function getSettingsView() {
             const t = translations[currentLang];
             const arrowIcon = currentLang === 'ar' ? 'fa-chevron-left' : 'fa-chevron-right';
+            const hasBackupNotice = localStorage.getItem('has_new_backup') === 'true';
             return `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px; gap: 12px;">
                 <h3 style="margin:0; font-weight:800;">${t.settings_title}</h3>
@@ -2298,7 +2437,7 @@
             </div>
 
             <!-- Backup Button (New) -->
-            <div data-view="backup" class="card click-target" style="flex-direction: row; align-items: center; justify-content: space-between; text-align: inherit; padding: 12px 16px; margin-bottom: 12px; cursor:pointer;">
+            <div data-view="backup" class="card click-target" style="flex-direction: row; align-items: center; justify-content: space-between; text-align: inherit; padding: 12px 16px; margin-bottom: 12px; cursor:pointer; position: relative;">
                 <div style="display:flex; align-items:center; gap: 12px;">
                     <div class="icon-holder" style="width:48px; height:48px; background: linear-gradient(135deg,#6366f1,#4f46e5); font-size: 20px; margin-bottom: 0;"><i class="fas fa-cloud"></i></div>
                     <div>
@@ -2306,7 +2445,10 @@
                         <div style="font-size:13px; color: var(--text-muted);">${t.backup_desc}</div>
                     </div>
                 </div>
-                <i class="fas ${arrowIcon}" style="color: var(--text-muted);"></i>
+                <div style="display:flex; align-items:center; gap:10px; position: relative;">
+                    ${hasBackupNotice ? '<span style="width:10px; height:10px; border-radius:50%; background:#f59e0b; display:inline-block; box-shadow:0 0 0 4px rgba(245,158,11,0.18);"></span>' : ''}
+                    <i class="fas ${arrowIcon}" style="color: var(--text-muted);"></i>
+                </div>
             </div>
 
             <!-- Divider -->
@@ -2343,6 +2485,12 @@
             const t = translations[currentLang];
             const backArrow = currentLang === 'ar' ? 'fa-arrow-right' : 'fa-arrow-left';
             let lastBackup = localStorage.getItem('last_backup_date') || t.never;
+            const hadPendingBackupNotice = localStorage.getItem('has_new_backup') === 'true';
+            localStorage.setItem('has_new_backup', 'false');
+            const lastCloudTs = localStorage.getItem('last_cloud_backup_ts') || '';
+            if (lastCloudTs) localStorage.setItem('last_seen_backup_ts', lastCloudTs);
+            hideBackupToast();
+            updateBackupIndicators();
 
             // Initial placeholder values
             let expenseCount = '...';
@@ -2386,6 +2534,7 @@
                         if (result.timestamp) {
                             const cloudDate = new Date(result.timestamp).toLocaleString(currentLang);
                             localStorage.setItem('last_backup_date', cloudDate);
+                            localStorage.setItem('last_cloud_backup_ts', result.timestamp);
                             const dateEl = document.getElementById('lastBackupDatePage');
                             if (dateEl) dateEl.textContent = cloudDate;
                         }
@@ -2436,7 +2585,8 @@
                     </div>
 
                     <!-- Restore Action -->
-                    <div onclick="handleRestore(event)" class="card click-target" style="text-align: center; padding: 24px 16px; border: 2px solid transparent; transition: all 0.3s; cursor: pointer;">
+                    <div onclick="handleRestore(event)" class="card click-target" style="text-align: center; padding: 24px 16px; border: 2px solid transparent; transition: all 0.3s; cursor: pointer; position: relative;">
+                        ${hadPendingBackupNotice ? '<span style="position:absolute; top:10px; right:10px; width:10px; height:10px; border-radius:50%; background:#f59e0b; box-shadow:0 0 0 4px rgba(245,158,11,0.18);"></span>' : ''}
                         <div class="icon-holder" style="width: 50px; height: 50px; background: #ecfdf5; color: #10b981; font-size: 22px; margin: 0 auto 15px;"><i class="fas fa-cloud-download-alt"></i></div>
                         <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 8px;">${t.btn_restore}</h3>
                         <p style="font-size: 11px; color: var(--text-muted); margin: 0;">${t.backup_download_desc}</p>
@@ -3240,6 +3390,7 @@
         function openPeriodSelectionModal() {
             const modal = document.getElementById('periodSelectionModal');
             const container = document.getElementById('periodListContainer');
+            const t = translations[currentLang];
 
             // Generate list of periods (last 12 months + any future ones in data)
             const periods = Object.keys(allExpensePeriods).filter(id => id !== 'PERMANENT').sort().reverse();
@@ -3254,20 +3405,27 @@
             container.innerHTML = uniquePeriods.map(pid => {
                 const label = getPeriodLabel(pid);
                 const isCurrent = pid === currentPeriodId;
+
+                // Style for active vs inactive
+                const bg = isCurrent ? 'linear-gradient(135deg, #8b5cf6, #d946ef)' : 'var(--bg)';
+                const color = isCurrent ? 'white' : 'var(--text)';
+                const border = isCurrent ? 'none' : '1px solid var(--border-color)';
+                const shadow = isCurrent ? '0 8px 20px rgba(139, 92, 246, 0.3)' : 'none';
+
                 return `
-                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                <div style="display: flex; gap: 12px; align-items: center;">
                     <button onclick="changePeriod('${pid}'); closePeriodSelectionModal();" class="btn" style="
                         flex: 1; 
                         padding: 16px; 
                         text-align: center; 
-                        background: ${isCurrent ? 'linear-gradient(135deg, var(--primary), var(--accent))' : 'var(--bg)'}; 
-                        color: ${isCurrent ? 'white' : 'var(--text)'};
-                        border: ${isCurrent ? 'none' : '1px solid var(--border-color)'};
+                        background: ${bg}; 
+                        color: ${color};
+                        border: ${border};
                         border-radius: 16px;
                         font-weight: 800;
                         font-size: 16px;
-                        box-shadow: ${isCurrent ? '0 8px 20px var(--primary-soft)' : 'none'};
-                        transition: all 0.3s;
+                        box-shadow: ${shadow};
+                        transition: all 0.2s;
                     ">
                         ${label}
                     </button>
@@ -3277,30 +3435,35 @@
                         border-radius: 16px; 
                         background: #fee2e2; 
                         color: #ef4444; 
-                        border: 1px solid #fecaca;
+                        border: none;
                         flex-shrink: 0;
                         font-size: 20px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
                     ">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>
                 `;
             }).join('') + `
-                <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 25px;">
-                    <label style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 12px; font-weight: 700; text-align: center;">${translations[currentLang].lbl_select_month}</label>
+                <div style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 24px;">
+                    <label style="display: block; font-size: 14px; color: var(--text); margin-bottom: 12px; font-weight: 700; text-align: center;">${t.lbl_select_month}</label>
                     <div style="position: relative;">
                         <input type="month" onchange="changePeriod(this.value); closePeriodSelectionModal();" style="
                             width: 100%; 
                             padding: 16px; 
                             border-radius: 16px; 
-                            border: 1px solid var(--border-color); 
-                            background: var(--bg); 
-                            color: var(--text); 
+                            border: 1px solid #e2e8f0; 
+                            background: #f8fafc; 
+                            color: var(--primary); 
                             font-family: inherit; 
-                            font-weight: 700;
+                            font-weight: 800;
                             font-size: 16px;
                             text-align: center;
+                            outline: none;
                         ">
+                        <i class="fas fa-calendar-alt" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none;"></i>
                     </div>
                 </div>
             `;
@@ -3466,7 +3629,7 @@
                 return t.dist_mode_permanent;
             }
             const date = new Date(periodId + "-01");
-            let locale = 'ar-EG';
+            let locale = 'ar-EG-u-nu-latn';
             if (currentLang === 'en') locale = 'en-US';
             if (currentLang === 'fr') locale = 'fr-FR';
             return date.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
@@ -3540,7 +3703,7 @@
                 let gradientParts = [];
                 const colors = ['#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#3b82f6', '#ef4444', '#6366f1', '#84cc16'];
 
-                legendHTML = '<div class="legend-grid">';
+                legendHTML = '<div class="legend-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-top: 30px;">';
 
                 expenseManagerData.items.forEach((item, index) => {
                     if (item.actual > 0) {
@@ -3552,17 +3715,17 @@
                         currentAngle = endAngle;
 
                         legendHTML += `
-                            <div class="legend-item">
-                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                                    <span style="width: 8px; height: 8px; border-radius: 50%; background: ${color}; flex-shrink: 0;"></span>
-                                    <span style="font-size: 12px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" dir="auto">${item.category}</span>
+                            <div class="legend-card" style="background: var(--bg); padding: 12px; border-radius: 16px; display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-weight: 700; font-size: 13px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80%;" dir="auto">${item.category}</span>
+                                    <span style="width: 8px; height: 8px; border-radius: 50%; background: ${color};"></span>
                                 </div>
-                                <div style="display: flex; align-items: flex-end; justify-content: space-between;">
-                                    <div style="font-size: 11px; color: var(--text-muted);">${cur.symbol} ${item.actual}</div>
-                                    <div style="font-weight: 800; font-size: 14px; color: ${color};">${percent.toFixed(1)}%</div>
+                                <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                                    <span style="font-size: 18px; font-weight: 800; color: ${color}; line-height: 1;">${percent.toFixed(1)}%</span>
+                                    <span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">${cur.symbol} ${item.actual}</span>
                                 </div>
-                                <div style="width: 100%; height: 4px; background: var(--surface); border-radius: 2px; overflow: hidden; margin-top: 4px;">
-                                    <div style="width: ${percent}%; height: 100%; background: ${color}; border-radius: 2px;"></div>
+                                <div style="width: 100%; height: 6px; background: var(--surface); border-radius: 10px; overflow: hidden;">
+                                    <div style="width: ${percent}%; height: 100%; background: ${color}; border-radius: 10px;"></div>
                                 </div>
                             </div>
                         `;
@@ -3595,17 +3758,71 @@
             } else {
                 rowsContent = expenseManagerData.items.map((item, index) => {
                     const diff = item.budget - item.actual;
-                    const diffColor = diff < 0 ? '#ef4444' : '#22c55e';
+                    const isOverBudget = diff < 0;
+                    const diffColor = isOverBudget ? '#ef4444' : '#10b981';
+                    const percent = Math.min((item.actual / (item.budget || 1)) * 100, 100);
+                    const progressColor = isOverBudget ? '#ef4444' : '#3b82f6'; // Red if over, Blue if under
+
                     return `
-                    <div class="expense-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--border-color); align-items: center;">
-                        <div style="font-weight: 600; font-size: 14px; text-align: start;">${item.category}</div>
-                        <div style="text-align: center; color: var(--text-muted); font-size: 13px;">${item.budget}</div>
+                    <div class="expense-row" style="display: grid; grid-template-columns: 1.5fr 0.8fr 1fr 0.8fr; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--border-color); align-items: center; transition: background 0.2s;">
+                        
+                        <!-- Category Section with Progress -->
+                        <div style="text-align: start; padding-inline-start: 8px;">
+                            <div style="font-weight: 700; font-size: 14px; color: var(--text); margin-bottom: 6px;">${item.category}</div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="flex: 1; height: 6px; background: var(--bg); border-radius: 10px; overflow: hidden;">
+                                    <div style="width: ${percent}%; height: 100%; background: ${progressColor}; border-radius: 10px; transition: width 0.5s ease;"></div>
+                                </div>
+                                <div style="font-size: 10px; color: var(--text-muted); font-weight: 600;">${Math.round(percent)}%</div>
+                            </div>
+                        </div>
+
+                        <!-- Budget -->
+                        <div style="text-align: center; color: var(--text-muted); font-size: 13px; font-weight: 600; background: var(--bg); padding: 6px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 2px 6px var(--shadow-color);">
+                            ${item.budget}
+                        </div>
+
+                        <!-- Actual (Editable) -->
                         <div style="text-align: center;">
-                            <button onclick="openExpenseEditModal(${index})" class="btn" style="background: var(--bg); border: 1px solid var(--border-color); padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: 700; color: var(--text); display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 100%; justify-content: center;">
-                                ${item.actual} <i class="fas fa-pen" style="font-size: 10px; opacity: 0.5;"></i>
+                            <button onclick="openExpenseEditModal(${index})" class="btn" style="
+                                background: ${isOverBudget ? '#fef2f2' : '#eff6ff'}; 
+                                color: ${isOverBudget ? '#ef4444' : '#3b82f6'};
+                                border: 1px solid ${isOverBudget ? '#fca5a5' : 'var(--border-color)'}; 
+                                padding: 8px 12px; 
+                                border-radius: 10px; 
+                                font-size: 13px; 
+                                font-weight: 700; 
+                                display: inline-flex; 
+                                align-items: center; 
+                                justify-content: center; 
+                                gap: 8px; 
+                                width: 100%; 
+                                transition: all 0.2s;
+                                box-shadow: 0 2px 8px var(--shadow-color);
+                            ">
+                                ${item.actual} <i class="fas fa-pen" style="font-size: 10px; opacity: 0.7;"></i>
                             </button>
                         </div>
-                        <div style="text-align: center; color: ${diffColor}; font-weight: 700; font-size: 13px;">${diff}</div>
+
+                        <!-- Difference -->
+                        <div style="text-align: center;">
+                            <div style="
+                                display: inline-flex;
+                                align-items: center;
+                                justify-content: center;
+                                min-width: 70px;
+                                padding: 8px 10px;
+                                border-radius: 10px;
+                                background: var(--bg);
+                                border: 1px solid var(--border-color);
+                                box-shadow: 0 2px 8px var(--shadow-color);
+                                font-weight: 800;
+                                font-size: 13px;
+                                color: ${diffColor};
+                            ">
+                                ${diff}
+                            </div>
+                        </div>
                     </div>
                     `;
                 }).join('');
@@ -3671,7 +3888,8 @@
                     <button data-view="home" class="btn icon-btn"><i class="fas ${backArrow}"></i></button>
                     <h3 style="margin:0; font-weight:800; font-size: 20px;">${t.expenses_title}</h3>
                 </div>
-                <div style="display: flex; gap: 10px;">
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="renderView('expense_insights')" class="btn icon-btn" style="background: var(--bg); color: #8b5cf6; width: 35px; height: 35px; border: 1px solid var(--border-color); border-radius: 50%;"><i class="fas fa-chart-simple"></i></button>
                     <button onclick="openExpenseInfoModal()" class="btn icon-btn" style="background: var(--bg); color: var(--primary); width: 35px; height: 35px; border: 1px solid var(--border-color); border-radius: 50%;"><i class="fas fa-info-circle"></i></button>
                     <button onclick="openBudgetSetup()" class="btn icon-btn" style="background: var(--primary); color: white; width: 35px; height: 35px; box-shadow: 0 4px 10px var(--primary-soft); border-radius: 50%;"><i class="fas ${setupIcon}"></i></button>
                 </div>
@@ -3697,7 +3915,7 @@
             <div class="details-card" style="margin-bottom: 24px;">
                 <div class="details-title">${t.lbl_details}</div>
                 
-                <div class="details-table-header">
+                <div class="details-table-header" style="grid-template-columns: 1.5fr 0.8fr 1fr 0.8fr; gap: 12px; padding-inline-start: 8px;">
                     <div style="text-align: start;">${t.col_category}</div>
                     <div style="text-align: center;">${t.col_budget}</div>
                     <div style="text-align: center;">${t.col_actual}</div>
@@ -3715,13 +3933,13 @@
                      ${periodControlHTML}
                 </div>
                 
-                <div class="details-title" style="margin-top: 50px;">${t.chart_title}</div>
+                <div class="details-title" style="margin-top: 50px; text-align: center;">${t.chart_title}</div>
                 
-                <div class="chart-circle-container">
+                <div class="chart-circle-container" style="width: 200px; height: 200px; margin: 0 auto;">
                     <div style="width: 100%; height: 100%; border-radius: 50%; background: ${chartGradient}; position: relative;">
-                        <div style="position: absolute; inset: 20px; background: var(--surface); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: inset 0 5px 15px rgba(0,0,0,0.05);">
-                            <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">${t.col_actual}</span>
-                            <span style="font-size: 24px; font-weight: 800; color: var(--text);">${Math.round((totalActual / (totalBudget || 1)) * 100)}%</span>
+                        <div style="position: absolute; inset: 25px; background: var(--surface); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: inset 0 5px 15px rgba(0,0,0,0.05);">
+                            <span style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">${t.col_actual}</span>
+                            <span style="font-size: 32px; font-weight: 800; color: var(--text);">${Math.round((totalActual / (totalBudget || 1)) * 100)}%</span>
                         </div>
                     </div>
                 </div>
@@ -3823,64 +4041,151 @@
 
             <!-- Expense Edit Modal -->
             <div id="expenseEditModal" class="dev-modal-overlay" style="z-index: 2100;">
-                <div class="dev-modal" style="max-width: 400px; width: 95%; text-align: left;">
-                    <div style="padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--surface);">
-                        <h3 style="font-weight: 800; margin: 0; font-size: 18px;">${t.edit_expense_title}</h3>
-                        <button onclick="closeExpenseEditModal()" class="btn icon-btn" style="width: 30px; height: 30px;"><i class="fas fa-times"></i></button>
+                <div class="dev-modal" style="max-width: 380px; width: 95%; text-align: left; border-radius: 24px; padding: 0; overflow: hidden;">
+                    
+                    <div style="padding: 24px 24px 0 24px; display: flex; justify-content: space-between; align-items: center;">
+                        <button onclick="closeExpenseEditModal()" class="btn icon-btn" style="width: 32px; height: 32px; background: transparent; color: var(--text-muted);"><i class="fas fa-times"></i></button>
+                        <h3 style="font-weight: 800; margin: 0; font-size: 18px; color: var(--text);">${t.edit_expense_title}</h3>
+                        <div style="width: 32px;"></div> <!-- Spacer for centering -->
                     </div>
                     
-                    <div style="padding: 20px;">
-                        <div style="margin-bottom: 15px;">
-                            <label style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px;">${t.col_category}</label>
-                            <div style="position: relative;">
-                                <i class="fas fa-tag" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px;"></i>
-                                <input type="text" id="editExpenseCategory" class="splash-btn" style="background: var(--bg); color: var(--text); padding: 12px 12px 12px 35px; width: 100%; border: 1px solid var(--border-color); box-shadow: none; opacity: 1; animation: none;">
+                    <div style="padding: 24px;">
+                        
+                        <!-- Category -->
+                        <div style="margin-bottom: 20px;">
+                            <label style="font-size: 13px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px; text-align: right;">${t.col_category}</label>
+                            <div style="position: relative; display: flex; align-items: center;">
+                                <div style="position: absolute; left: 16px; color: var(--text-muted); pointer-events: none;">
+                                    <i class="fas fa-tag"></i>
+                                </div>
+                                <input type="text" id="editExpenseCategory" style="
+                                    width: 100%;
+                                    background: #f8fafc; 
+                                    border: 1px solid #e2e8f0; 
+                                    border-radius: 16px; 
+                                    padding: 16px 16px 16px 45px; 
+                                    font-weight: 700; 
+                                    color: var(--text); 
+                                    font-size: 15px;
+                                    outline: none;
+                                    text-align: right;
+                                ">
                             </div>
                         </div>
 
-                        <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-                            <div style="flex: 1;">
-                                <label style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px;">${t.col_budget}</label>
-                                <div style="position: relative;">
-                                    <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 12px; font-weight: 700;">${cur.symbol}</span>
-                                    <input type="number" id="editExpenseBudget" class="splash-btn" style="background: var(--bg); color: var(--text); padding: 12px 12px 12px 35px; width: 100%; border: 1px solid var(--border-color); box-shadow: none; opacity: 1; animation: none;">
-                                </div>
+                        <!-- Budget -->
+                        <div style="margin-bottom: 20px;">
+                            <label style="font-size: 13px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px; text-align: right;">${t.col_budget}</label>
+                            <div style="position: relative; display: flex; align-items: center;">
+                                <div style="position: absolute; left: 16px; color: var(--text-muted); font-weight: 700; font-size: 13px; pointer-events: none;">${cur.symbol}</div>
+                                <input type="number" id="editExpenseBudget" style="
+                                    width: 100%;
+                                    background: #f8fafc; 
+                                    border: 1px solid #e2e8f0; 
+                                    border-radius: 16px; 
+                                    padding: 16px 16px 16px 50px; 
+                                    font-weight: 700; 
+                                    color: var(--text); 
+                                    font-size: 18px;
+                                    outline: none;
+                                    text-align: center;
+                                ">
                             </div>
                         </div>
 
-                        <div style="display: flex; gap: 15px; margin-bottom: 25px;">
-                            <div style="flex: 1;">
-                                <label style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px;">${t.lbl_previous_actual}</label>
-                                <div style="position: relative;">
-                                    <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 12px; font-weight: 700;">${cur.symbol}</span>
-                                    <input type="number" id="editExpensePrevActual" disabled class="splash-btn" style="background: var(--bg); color: var(--text-muted); padding: 12px 12px 12px 35px; width: 100%; border: 1px solid var(--border-color); box-shadow: none; opacity: 0.7; animation: none; font-weight: 700; cursor: not-allowed;">
+                        <!-- Actual & Add Amount Row -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 30px;">
+                            
+                            <!-- Add Amount -->
+                            <div>
+                                <label style="font-size: 13px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px; text-align: right;">${t.lbl_add_amount}</label>
+                                <div style="position: relative; display: flex; align-items: center;">
+                                    <div style="position: absolute; left: 12px; color: var(--text-muted); font-weight: 700; font-size: 11px; pointer-events: none;">${cur.symbol}</div>
+                                    <input type="number" id="editExpenseNewActual" placeholder="0" style="
+                                        width: 100%;
+                                        background: #f8fafc; 
+                                        border: 1px solid #e2e8f0; 
+                                        border-radius: 16px; 
+                                        padding: 14px 14px 14px 40px; 
+                                        font-weight: 700; 
+                                        color: var(--text); 
+                                        font-size: 16px;
+                                        outline: none;
+                                        text-align: center;
+                                    ">
                                 </div>
                             </div>
-                            <div style="flex: 1;">
-                                <label style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px;">${t.lbl_add_amount}</label>
-                                <div style="position: relative;">
-                                    <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 12px; font-weight: 700;">${cur.symbol}</span>
-                                    <input type="number" id="editExpenseNewActual" class="splash-btn" style="background: var(--bg); color: var(--text); padding: 12px 12px 12px 35px; width: 100%; border: 1px solid var(--border-color); box-shadow: none; opacity: 1; animation: none; font-weight: 700;" placeholder="0">
+
+                            <!-- Current Actual -->
+                            <div>
+                                <label style="font-size: 13px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px; text-align: right;">${t.lbl_previous_actual}</label>
+                                <div style="position: relative; display: flex; align-items: center;">
+                                    <div style="position: absolute; left: 12px; color: var(--text-muted); font-weight: 700; font-size: 11px; pointer-events: none;">${cur.symbol}</div>
+                                    <input type="number" id="editExpensePrevActual" disabled style="
+                                        width: 100%;
+                                        background: #f1f5f9; 
+                                        border: 1px solid #e2e8f0; 
+                                        border-radius: 16px; 
+                                        padding: 14px 14px 14px 40px; 
+                                        font-weight: 700; 
+                                        color: var(--text-muted); 
+                                        font-size: 16px;
+                                        outline: none;
+                                        text-align: center;
+                                    ">
                                 </div>
                             </div>
+
                         </div>
 
-                        <div style="display: flex; gap: 10px;">
-                            <button onclick="closeExpenseEditModal()" class="btn" style="flex: 1; padding: 12px; border-radius: 12px; background: var(--bg); color: var(--text-muted); font-weight: 700;">${t.btn_cancel}</button>
-                            <button onclick="saveExpenseEdit()" class="splash-btn" style="flex: 2; opacity: 1; animation: none; margin: 0;">${t.btn_save_changes}</button>
+                        <!-- Actions -->
+                        <div style="display: flex; gap: 12px;">
+                            <button onclick="saveExpenseEdit()" class="btn" style="
+                                flex: 2; 
+                                padding: 16px; 
+                                border-radius: 16px; 
+                                background: var(--primary); 
+                                color: white; 
+                                font-weight: 800; 
+                                font-size: 15px;
+                                border: none;
+                                box-shadow: 0 4px 12px var(--primary-soft);
+                            ">${t.btn_save_changes}</button>
+                            <button onclick="closeExpenseEditModal()" class="btn" style="
+                                flex: 1; 
+                                padding: 16px; 
+                                border-radius: 16px; 
+                                background: #f1f5f9; 
+                                color: var(--text-muted); 
+                                font-weight: 700; 
+                                font-size: 15px;
+                                border: none;
+                            ">${t.btn_cancel}</button>
                         </div>
+
                     </div>
                 </div>
             </div>
 
             <!-- Period Selection Modal -->
             <div id="periodSelectionModal" class="dev-modal-overlay" style="z-index: 2300;">
-                <div class="dev-modal" style="max-width: 350px; width: 90%; padding: 20px;">
-                    <h3 style="margin-top: 0; margin-bottom: 20px; text-align: center;">${t.activity_history}</h3>
-                    <div id="periodListContainer" style="display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto;">
+                <div class="dev-modal" style="max-width: 380px; width: 95%; text-align: center; border-radius: 24px; padding: 30px 24px;">
+                    <h3 style="margin: 0 0 24px 0; font-weight: 800; font-size: 20px; color: var(--text);">${t.activity_history}</h3>
+                    
+                    <div id="periodListContainer" style="display: flex; flex-direction: column; gap: 12px; max-height: 300px; overflow-y: auto; padding: 4px;">
                         <!-- Periods will be injected here -->
                     </div>
-                    <button onclick="closePeriodSelectionModal()" class="btn" style="margin-top: 20px; width: 100%; background: var(--bg); color: var(--text-muted);">${t.btn_cancel}</button>
+
+                    <button onclick="closePeriodSelectionModal()" class="btn" style="
+                        margin-top: 24px; 
+                        width: 100%; 
+                        padding: 14px;
+                        background: #f1f5f9; 
+                        color: var(--text-muted); 
+                        font-weight: 700;
+                        border-radius: 14px;
+                        font-size: 15px;
+                    ">${t.btn_cancel}</button>
                 </div>
             </div>
 
@@ -4111,6 +4416,203 @@
             updateNotificationBadge();
         }
 
+        function getExpenseInsightsView() {
+            const t = translations[currentLang];
+            const cur = currencies[currentCurrency];
+            const backArrow = currentLang === 'ar' ? 'fa-arrow-right' : 'fa-arrow-left';
+
+            // 1. Calculate Totals
+            let totalBudget = 0;
+            let totalActual = 0;
+            expenseManagerData.items.forEach(item => {
+                totalBudget += item.budget;
+                totalActual += item.actual;
+            });
+            const remaining = totalBudget - totalActual;
+            const burnRate = totalBudget > 0 ? (totalActual / totalBudget) * 100 : 0;
+
+            // 2. Health Score
+            let healthScore = 100 - burnRate;
+            if (healthScore < 0) healthScore = 0;
+
+            let healthStatus = t.status_safe;
+            let healthColor = '#10b981';
+            let healthMsg = t.health_msg_safe;
+
+            if (burnRate >= 80 && burnRate < 100) {
+                healthStatus = t.status_warning;
+                healthColor = '#f59e0b';
+                healthMsg = t.health_msg_warning;
+            } else if (burnRate >= 100) {
+                healthStatus = t.status_critical;
+                healthColor = '#ef4444';
+                healthMsg = t.health_msg_critical;
+            }
+
+            // 3. Top Spenders
+            const sortedItems = [...expenseManagerData.items].sort((a, b) => b.actual - a.actual);
+            const topSpenders = sortedItems.slice(0, 3);
+
+            // 4. Spending Breakdown (Categories > 0)
+            const activeCategories = sortedItems.filter(item => item.actual > 0);
+
+            // 5. End of Month Summary Logic
+            const today = new Date();
+            const currentDay = today.getDate();
+            const currentMonth = today.getMonth(); // 0-11
+            const lastDayOfMonth = new Date(today.getFullYear(), currentMonth + 1, 0).getDate();
+
+            // Show if day is 30 or more, OR if it's the last day of the month (covers Feb 28/29)
+            const isEndOfMonth = currentDay >= 30 || currentDay === lastDayOfMonth;
+
+            let endOfMonthHTML = '';
+            if (isEndOfMonth) {
+                const eomColor = remaining >= 0 ? '#10b981' : '#ef4444';
+                const eomMsg = remaining >= 0 ? t.eom_good_job : t.eom_warning;
+
+                endOfMonthHTML = `
+                <div class="details-card" style="margin-bottom: 24px; background: linear-gradient(135deg, #1e293b, #0f172a); color: white; border: 1px solid #334155;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                        <div style="width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                            <i class="fas fa-flag-checkered"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 800; font-size: 16px;">${t.eom_report_title}</div>
+                            <div style="font-size: 12px; opacity: 0.8;">${t.eom_msg}</div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px;">
+                            <div style="font-size: 11px; opacity: 0.7; margin-bottom: 4px;">${t.eom_final_spent}</div>
+                            <div style="font-size: 16px; font-weight: 800; color: #ef4444;">${cur.symbol} ${totalActual}</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px;">
+                            <div style="font-size: 11px; opacity: 0.7; margin-bottom: 4px;">${t.eom_final_remaining}</div>
+                            <div style="font-size: 16px; font-weight: 800; color: ${eomColor};">${cur.symbol} ${remaining}</div>
+                        </div>
+                    </div>
+
+                    <div style="font-size: 13px; font-weight: 600; text-align: center; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                        ${eomMsg}
+                    </div>
+                </div>
+                `;
+            }
+
+            return `
+            <div class="glass-header" style="display:flex; align-items:center; gap: 12px; margin-bottom: 24px;">
+                <button onclick="renderView('expenses')" class="btn icon-btn"><i class="fas ${backArrow}"></i></button>
+                <h3 style="margin:0; font-weight:800; font-size: 20px;">${t.insights_title}</h3>
+            </div>
+
+            ${endOfMonthHTML}
+
+            <!-- Summary Cards -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px;">
+                <div class="card" style="padding: 16px; align-items: center; text-align: center; background: var(--surface);">
+                    <div style="width: 40px; height: 40px; border-radius: 12px; background: #eff6ff; color: #3b82f6; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 8px;">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 700;">${t.lbl_total_budget}</div>
+                    <div style="font-size: 15px; font-weight: 800; color: var(--text);">${cur.symbol} ${totalBudget}</div>
+                </div>
+                <div class="card" style="padding: 16px; align-items: center; text-align: center; background: var(--surface);">
+                    <div style="width: 40px; height: 40px; border-radius: 12px; background: #fef2f2; color: #ef4444; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 8px;">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 700;">${t.lbl_total_spent}</div>
+                    <div style="font-size: 15px; font-weight: 800; color: #ef4444;">${cur.symbol} ${totalActual}</div>
+                </div>
+                <div class="card" style="padding: 16px; align-items: center; text-align: center; background: var(--surface);">
+                    <div style="width: 40px; height: 40px; border-radius: 12px; background: #ecfdf5; color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 8px;">
+                        <i class="fas fa-piggy-bank"></i>
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 700;">${t.lbl_remaining_budget}</div>
+                    <div style="font-size: 15px; font-weight: 800; color: ${remaining >= 0 ? '#10b981' : '#ef4444'};">${cur.symbol} ${remaining}</div>
+                </div>
+            </div>
+
+            <!-- Health Score Section -->
+            <div class="details-card" style="margin-bottom: 24px; padding: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div style="font-weight: 800; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-heart-pulse" style="color: ${healthColor};"></i> ${t.lbl_budget_health}
+                    </div>
+                    <div style="padding: 6px 12px; border-radius: 20px; background: ${healthColor}15; color: ${healthColor}; font-size: 12px; font-weight: 800;">
+                        ${healthStatus}
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
+                    <div style="position: relative; width: 80px; height: 80px; flex-shrink: 0;">
+                        <svg viewBox="0 0 36 36" style="width: 100%; height: 100%; transform: rotate(-90deg);">
+                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e2e8f0" stroke-width="3" />
+                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="${healthColor}" stroke-width="3" stroke-dasharray="${healthScore}, 100" />
+                        </svg>
+                        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; color: var(--text);">
+                            ${Math.round(healthScore)}
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size: 14px; color: var(--text); font-weight: 700; margin-bottom: 4px;">${t.lbl_health_score}</div>
+                        <div style="font-size: 13px; color: var(--text-muted); line-height: 1.5;">${healthMsg}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Spenders -->
+            <div class="details-card" style="margin-bottom: 24px;">
+                <div class="details-title" style="margin-bottom: 16px;">${t.lbl_top_spenders}</div>
+                ${topSpenders.length > 0 ? topSpenders.map((item, index) => {
+                const percent = totalActual > 0 ? (item.actual / totalActual) * 100 : 0;
+                return `
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: ${index === topSpenders.length - 1 ? 'none' : '1px solid var(--border-color)'};">
+                        <div style="width: 32px; height: 32px; border-radius: 10px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; color: var(--text-muted);">
+                            ${index + 1}
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <span style="font-weight: 700; font-size: 14px; color: var(--text);">${item.category}</span>
+                                <span style="font-weight: 800; font-size: 14px; color: #ef4444;">${cur.symbol} ${item.actual}</span>
+                            </div>
+                            <div style="width: 100%; height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden;">
+                                <div style="width: ${percent}%; height: 100%; background: #ef4444; border-radius: 3px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+            }).join('') : `<div style="text-align: center; color: var(--text-muted); padding: 20px;">${t.empty_state_msg}</div>`}
+            </div>
+
+            <!-- Spending Breakdown -->
+            <div class="details-card">
+                <div class="details-title" style="margin-bottom: 16px;">${t.lbl_spending_breakdown}</div>
+                ${activeCategories.length > 0 ? activeCategories.map(item => {
+                const budgetPercent = item.budget > 0 ? (item.actual / item.budget) * 100 : 0;
+                let barColor = '#3b82f6';
+                if (budgetPercent > 80) barColor = '#f59e0b';
+                if (budgetPercent > 100) barColor = '#ef4444';
+
+                return `
+                    <div style="margin-bottom: 16px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px;">
+                            <span style="font-weight: 600; color: var(--text);">${item.category}</span>
+                            <span style="color: var(--text-muted);">${Math.round(budgetPercent)}%</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden;">
+                            <div style="width: ${Math.min(budgetPercent, 100)}%; height: 100%; background: ${barColor}; border-radius: 4px;"></div>
+                        </div>
+                        <div style="text-align: end; font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+                            ${item.actual} / ${item.budget}
+                        </div>
+                    </div>
+                    `;
+            }).join('') : `<div style="text-align: center; color: var(--text-muted); padding: 20px;">${t.empty_state_msg}</div>`}
+            </div>
+            `;
+        }
+
         function openBudgetSetup() {
             const modal = document.getElementById('budgetModal');
             const viewTotal = document.getElementById('viewTotalIncome');
@@ -4337,7 +4839,7 @@
                     dayContent = `<div style="position: relative;">${i}<div style="position: absolute; top: -8px; right: -8px; width: 12px; height: 12px; background: var(--primary); border-radius: 50%; border: 2px solid var(--surface);"></div></div>`;
                 }
 
-                daysHTML += `<div onclick="selectAttendanceDate('${dateStr}')" class="${classes}" style="${todayStyle}">${dayContent}</div>`;
+                daysHTML += `<div onclick="selectAttendanceDate('${dateStr}', this)" data-date="${dateStr}" class="${classes}" style="${todayStyle}">${dayContent}</div>`;
             }
 
             // Recent Activities
@@ -4445,31 +4947,34 @@
             </div>
 
             <!-- Calendar Section -->
-            <div class="calendar-wrapper">
-                <div class="cal-header">
-                    <button onclick="changeAttendanceMonth(-1)" class="btn icon-btn"><i class="fas ${iconPrev}"></i></button>
-                    <div style="font-weight: 800; font-size: 18px;">${monthName} ${year}</div>
-                    <button onclick="changeAttendanceMonth(1)" class="btn icon-btn"><i class="fas ${iconNext}"></i></button>
+            <div class="calendar-wrapper" style="padding: 24px; border-radius: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+                <div class="cal-header" style="margin-bottom: 24px;">
+                    <button onclick="changeAttendanceMonth(-1)" class="btn icon-btn" style="background: var(--bg); width: 36px; height: 36px; border-radius: 12px;"><i class="fas ${iconPrev}" style="font-size: 14px;"></i></button>
+                    <div style="font-weight: 800; font-size: 18px; color: var(--text);">${monthName} ${year}</div>
+                    <button onclick="changeAttendanceMonth(1)" class="btn icon-btn" style="background: var(--bg); width: 36px; height: 36px; border-radius: 12px;"><i class="fas ${iconNext}" style="font-size: 14px;"></i></button>
                 </div>
                 
-                <div class="cal-grid">
-                    ${t.days_short.map(d => `<div class="cal-day-header">${d}</div>`).join('')}
+                <div class="cal-grid" style="margin-bottom: 12px;">
+                    ${t.days_short.map(d => `<div class="cal-day-header" style="font-size: 13px; color: var(--text-muted); font-weight: 600;">${d}</div>`).join('')}
                 </div>
-                <div class="cal-grid" style="margin-top: 10px;">
+                <div class="cal-grid">
                     ${daysHTML}
                 </div>
 
-                <!-- Action Buttons (Visible when date selected) -->
-                <div class="action-buttons">
-                    <button onclick="updateAttendanceStatus(null)" class="action-btn clear">
-                        <i class="fas fa-eraser"></i> ${t.attendance_btn_clear}
-                    </button>
-                    <button onclick="updateAttendanceStatus('absent')" class="action-btn absent">
-                        <i class="fas fa-user-xmark"></i> ${t.attendance_btn_absent}
-                    </button>
-                    <button onclick="updateAttendanceStatus('present')" class="action-btn present">
+                <!-- Action Buttons -->
+                <div class="action-buttons" style="margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                    <button onclick="updateAttendanceStatus('present')" class="btn" style="background: #10b981; color: white; padding: 14px; border-radius: 16px; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);">
                         <i class="fas fa-briefcase"></i> ${t.attendance_btn_present}
                     </button>
+                    <button onclick="updateAttendanceStatus('absent')" class="btn" style="background: #ef4444; color: white; padding: 14px; border-radius: 16px; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);">
+                        <i class="fas fa-user-xmark"></i> ${t.attendance_btn_absent}
+                    </button>
+                    <button onclick="updateAttendanceStatus(null)" class="btn" style="background: #64748b; color: white; padding: 14px; border-radius: 16px; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(100, 116, 139, 0.2);">
+                        <i class="fas fa-eraser"></i> ${t.attendance_btn_clear}
+                    </button>
+                </div>
+                <div id="attendanceTodayHint" style="text-align: center; margin-top: 12px; font-size: 12px; color: var(--text-muted); font-weight: 600; display: ${!selectedDate && isCurrentMonth ? 'block' : 'none'};">
+                    ${t.today_date}: ${todayDate} ${monthName}
                 </div>
             </div>
 
@@ -4507,13 +5012,16 @@
 
             <!-- Attendance Activities Modal -->
             <div id="attendanceActivitiesModal" class="dev-modal-overlay" style="z-index: 2000;">
-                <div class="dev-modal" style="max-width: 450px; width: 95%; text-align: start; max-height: 85vh; overflow-y: auto; padding: 0; overflow: hidden; display: flex; flex-direction: column;">
-                    <div style="padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--surface);">
-                        <h3 style="font-weight: 800; margin: 0; font-size: 18px;">${t.attendance_modal_title}</h3>
-                        <button onclick="closeAttendanceActivitiesModal()" class="btn icon-btn" style="width: 30px; height: 30px;"><i class="fas fa-times"></i></button>
+                <div class="dev-modal" style="max-width: 400px; width: 95%; text-align: left; border-radius: 24px; padding: 0; overflow: hidden; display: flex; flex-direction: column; max-height: 80vh;">
+                    
+                    <div style="padding: 24px 24px 0 24px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+                        <button onclick="closeAttendanceActivitiesModal()" class="btn icon-btn" style="width: 32px; height: 32px; background: transparent; color: var(--text-muted);"><i class="fas fa-times"></i></button>
+                        <h3 style="font-weight: 800; margin: 0; font-size: 18px; color: var(--text);">${t.attendance_modal_title}</h3>
+                        <div style="width: 32px;"></div>
                     </div>
-                    <div style="padding: 20px; overflow-y: auto; flex: 1;">
-                        <div id="attendanceActivitiesList" class="timeline-container"></div>
+
+                    <div style="padding: 24px; overflow-y: auto; flex: 1;">
+                        <div id="attendanceActivitiesList" style="display: flex; flex-direction: column; gap: 16px;"></div>
                     </div>
                 </div>
             </div>
@@ -4658,32 +5166,34 @@
             const month = currentCalendarDate.getMonth() + 1;
             const monthKey = `${year}-${String(month).padStart(2, '0')}`;
 
+            // Ensure we are filtering correctly and showing ALL matching activities
             const monthActivities = attendanceData.activities.filter(act => act.date.startsWith(monthKey));
 
             if (monthActivities.length === 0) {
                 list.innerHTML = `
-                    <div class="empty-state-container">
-                        <div class="empty-state-icon"><i class="fas fa-clipboard-list"></i></div>
-                        <div class="empty-state-text">${t.attendance_no_activities}</div>
+                    <div class="empty-state-container" style="padding: 40px 0;">
+                        <div class="empty-state-icon" style="font-size: 40px; margin-bottom: 15px; color: var(--text-muted); opacity: 0.5;"><i class="fas fa-clipboard-list"></i></div>
+                        <div class="empty-state-text" style="font-size: 14px; color: var(--text-muted); font-weight: 600;">${t.attendance_no_activities}</div>
                     </div>`;
             } else {
                 list.innerHTML = monthActivities.map((act) => {
                     const isAbsent = act.type === 'absent';
                     const color = isAbsent ? '#ef4444' : '#10b981';
+                    const bg = isAbsent ? '#fef2f2' : '#ecfdf5';
                     const icon = isAbsent ? 'fa-user-xmark' : 'fa-user-check';
                     const label = isAbsent ? t.attendance_activity_absent : t.attendance_activity_present;
 
                     return `
-                <div class="timeline-item">
-                    <div style="width: 45px; height: 45px; border-radius: 14px; background: ${color}15; color: ${color}; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+                <div style="display: flex; align-items: center; gap: 16px; padding: 16px; background: #f8fafc; border-radius: 20px; border: 1px solid #e2e8f0;">
+                    <div style="width: 48px; height: 48px; border-radius: 16px; background: ${bg}; color: ${color}; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; box-shadow: 0 4px 10px ${color}20;">
                         <i class="fas ${icon}"></i>
                     </div>
                     <div style="flex: 1;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                            <div style="font-weight: 700; font-size: 15px; color: var(--text);">${label}</div>
-                            <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">${act.date}</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <div style="font-weight: 800; font-size: 15px; color: var(--text);">${label}</div>
+                            <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; background: white; padding: 4px 8px; border-radius: 8px; border: 1px solid #e2e8f0;">${act.date}</div>
                         </div>
-                        <div style="font-size: 13px; color: var(--text-muted);">${t.attendance_activity_recorded}</div>
+                        <div style="font-size: 13px; color: var(--text-muted); font-weight: 500;">${t.attendance_activity_recorded}</div>
                     </div>
                 </div>
                 `;
@@ -4701,36 +5211,64 @@
             setTimeout(() => { modal.style.display = 'none'; }, 300);
         }
 
+
+
         function changeAttendanceMonth(delta) {
             // Set to 1st of month to avoid overflow issues (e.g. Oct 31 -> Nov 30)
             currentCalendarDate.setDate(1);
             currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
+            selectedDate = null;
             renderView('attendance');
         }
 
-        function selectAttendanceDate(dateStr) {
+        function selectAttendanceDate(dateStr, element) {
             selectedDate = dateStr;
-            renderView('attendance');
+
+            document.querySelectorAll('.cal-day.selected').forEach(el => el.classList.remove('selected'));
+            if (element) element.classList.add('selected');
+
+            const hint = document.getElementById('attendanceTodayHint');
+            if (hint) hint.style.display = 'none';
         }
 
         function updateAttendanceStatus(status) {
-            if (!selectedDate) return;
+            let targetDate = selectedDate;
 
-            if (status === 'clear') {
-                delete attendanceData.records[selectedDate];
+            // If no date selected, try to use today if we are in current month view
+            if (!targetDate) {
+                const today = new Date();
+                const year = currentCalendarDate.getFullYear();
+                const month = currentCalendarDate.getMonth();
+
+                if (today.getFullYear() === year && today.getMonth() === month) {
+                    targetDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                } else {
+                    // If not in current month and no date selected, do nothing or show alert
+                    // For now, we just return to avoid errors
+                    return;
+                }
+            }
+
+            if (status === 'clear' || status === null) {
+                delete attendanceData.records[targetDate];
             } else {
-                attendanceData.records[selectedDate] = status;
+                attendanceData.records[targetDate] = status;
 
                 // Add activity
                 attendanceData.activities.unshift({
                     type: status,
-                    date: selectedDate,
+                    date: targetDate,
                     timestamp: new Date().toISOString()
                 });
-                if (attendanceData.activities.length > 10) attendanceData.activities.pop();
+                // Keep more history for "View More"
+                if (attendanceData.activities.length > 50) attendanceData.activities.pop();
             }
 
             localStorage.setItem('attendanceData', JSON.stringify(attendanceData));
+
+            // If we auto-selected today, keep it selected for visual feedback
+            if (!selectedDate) selectedDate = targetDate;
+
             renderView('attendance');
             updateNotificationBadge();
         }
@@ -4753,6 +5291,7 @@
                 case 'currencies': content = getCurrenciesView(); break;
                 case 'expense_dist': content = getExpenseDistView(); break;
                 case 'expenses': content = getExpensesView(); break;
+                case 'expense_insights': content = getExpenseInsightsView(); break;
                 case 'smart_wallet': content = getSmartWalletView(); break;
                 case 'attendance': content = getAttendanceView(); break;
                 case 'about': content = getAboutView(); break;
@@ -4763,6 +5302,7 @@
             }
 
             mainContent.innerHTML = content;
+            updateBackupIndicators();
 
             triggerEntranceAnimations();
 
@@ -4773,13 +5313,86 @@
 
                 const dateElement = document.getElementById('currentDateText');
                 if (dateElement) {
-                    let locale = 'ar-EG';
+                    let locale = 'ar-EG-u-nu-latn';
                     if (currentLang === 'en') locale = 'en-US';
                     if (currentLang === 'fr') locale = 'fr-FR';
 
                     dateElement.textContent = new Date().toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
                 }
             }
+        }
+
+        function updateBackupIndicators() {
+            const hasBackupNotice = localStorage.getItem('has_new_backup') === 'true';
+            const dockSettings = document.querySelector('.dock-item[data-view="settings"]');
+            if (dockSettings) {
+                dockSettings.classList.toggle('backup-alert', hasBackupNotice);
+            }
+        }
+
+        let backupToastTimer = null;
+
+        function hideBackupToast() {
+            const toast = document.getElementById('backupToast');
+            if (toast) {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 200);
+            }
+            if (backupToastTimer) clearTimeout(backupToastTimer);
+        }
+
+        function showBackupAvailableToast() {
+            const t = translations[currentLang];
+            hideBackupToast();
+            const toast = document.createElement('div');
+            toast.id = 'backupToast';
+            toast.className = 'backup-toast';
+            toast.innerHTML = `
+                <div>
+                    <div class="pill">${t.backup_title}</div>
+                    <div style="font-weight:800; margin-top:6px;">${t.backup_new_available || 'Backup available'}</div>
+                </div>
+                <button onclick="renderView('backup'); hideBackupToast();">${t.btn_restore}</button>
+            `;
+            document.body.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.add('show'));
+            backupToastTimer = setTimeout(hideBackupToast, 5000);
+        }
+
+        async function checkCloudBackupAvailability() {
+            if (!window.firebaseAuth || !window.firebaseAuth.restoreData) return;
+            if (!localStorage.getItem('user_email')) return;
+            try {
+                const result = await window.firebaseAuth.restoreData();
+                if (result.success && result.timestamp) {
+                    const cloudTs = new Date(result.timestamp).toISOString();
+                    const lastSeen = localStorage.getItem('last_seen_backup_ts') || '';
+                    const lastCloud = localStorage.getItem('last_cloud_backup_ts') || '';
+
+                    if (!lastCloud || new Date(cloudTs) > new Date(lastCloud)) {
+                        localStorage.setItem('last_cloud_backup_ts', cloudTs);
+                    }
+
+                    if (!lastSeen || new Date(cloudTs) > new Date(lastSeen)) {
+                        localStorage.setItem('has_new_backup', 'true');
+                        updateBackupIndicators();
+                        showBackupAvailableToast();
+                    }
+                }
+            } catch (e) {
+                console.error('Backup availability check failed', e);
+            }
+        }
+
+        let backupWatcherStarted = false;
+        function startBackupWatcher() {
+            if (backupWatcherStarted) return;
+            if (!window.firebaseAuth || !window.firebaseAuth.restoreData) return;
+            backupWatcherStarted = true;
+            checkCloudBackupAvailability();
+            setInterval(() => checkCloudBackupAvailability(), 60000);
+            window.addEventListener('focus', () => checkCloudBackupAvailability());
+            document.addEventListener('visibilitychange', () => { if (!document.hidden) checkCloudBackupAvailability(); });
         }
 
         document.addEventListener('click', (e) => {
@@ -4823,6 +5436,11 @@
             'rose-light': { name: 'وردي', type: 'light', colors: { '--primary': '#e11d48', '--accent': '#f43f5e', '--bg': '#fff1f2', '--surface': '#ffffff' } },
             'indigo-light': { name: 'نيلي', type: 'light', colors: { '--primary': '#4f46e5', '--accent': '#6366f1', '--bg': '#eef2ff', '--surface': '#ffffff' } },
             'mint-light': { name: 'نعناع', type: 'light', colors: { '--primary': '#10b981', '--accent': '#0ea5e9', '--bg': '#ecfdf5', '--surface': '#ffffff' } },
+            'citrus-light': { name: 'حمضيات', type: 'light', colors: { '--primary': '#22c55e', '--accent': '#f59e0b', '--bg': '#fefce8', '--surface': '#ffffff' } },
+            'royal-light': { name: 'ملكي', type: 'light', colors: { '--primary': '#6366f1', '--accent': '#a855f7', '--bg': '#eef2ff', '--surface': '#ffffff' } },
+            'sand-light': { name: 'رملي', type: 'light', colors: { '--primary': '#d97706', '--accent': '#f97316', '--bg': '#fffbeb', '--surface': '#ffffff' } },
+            'blush-light': { name: 'وردي فاخر', type: 'light', colors: { '--primary': '#ec4899', '--accent': '#fb7185', '--bg': '#fff1f2', '--surface': '#ffffff' } },
+            'carbon-light': { name: 'كربون', type: 'light', colors: { '--primary': '#0f172a', '--accent': '#38bdf8', '--bg': '#e2e8f0', '--surface': '#ffffff' } },
             'default-dark': { name: 'داكن', type: 'dark', colors: { '--primary': '#22c55e', '--accent': '#3b82f6', '--bg': '#0f172a', '--surface': '#1e293b' } },
         };
 
@@ -4879,6 +5497,7 @@
 
         applyThemeSet(currentTheme);
         setLanguage(currentLang);
+        updateBackupIndicators();
 
         function showLanguageSelection() {
             const step1 = document.getElementById('splash-step-1');
@@ -5227,65 +5846,159 @@
 
     <!-- Transaction Modal (Global) -->
     <div id="transactionModal" class="dev-modal-overlay" onclick="if(event.target === this) closeTransactionModal()">
-        <div class="dev-modal" style="text-align: start;">
-            <button onclick="closeTransactionModal()" class="btn icon-btn"
-                style="position: absolute; top: 15px; right: 15px; width: 30px; height: 30px;"><i
-                    class="fas fa-times"></i></button>
-            <h3 id="transactionModalTitle" style="font-weight: 800; margin-bottom: 20px;"></h3>
+        <div class="dev-modal"
+            style="max-width: 380px; width: 95%; text-align: left; border-radius: 24px; padding: 0; overflow: hidden;">
 
-            <label id="lblTransactionAmount"
-                style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px;">المبلغ</label>
-            <div style="position: relative; margin-bottom: 16px;">
-                <span id="lblTransactionCurrency"
-                    style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 12px; font-weight: 700;">د.ج</span>
-                <input type="number" id="transactionAmount" class="splash-btn"
-                    style="background: var(--bg); color: var(--text); padding: 12px 12px 12px 35px; width: 100%; border: 1px solid var(--border-color); box-shadow: none; opacity: 1; animation: none; font-weight: 700;"
-                    placeholder="0">
+            <div style="padding: 24px 24px 0 24px; display: flex; justify-content: space-between; align-items: center;">
+                <button onclick="closeTransactionModal()" class="btn icon-btn"
+                    style="width: 32px; height: 32px; background: transparent; color: var(--text-muted);"><i
+                        class="fas fa-times"></i></button>
+                <h3 id="transactionModalTitle"
+                    style="font-weight: 800; margin: 0; font-size: 18px; color: var(--text);"></h3>
+                <div style="width: 32px;"></div>
             </div>
 
-            <label id="lblTransactionNote"
-                style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px;">ملاحظة</label>
-            <textarea id="transactionNote" class="splash-btn"
-                style="background: var(--bg); color: var(--text); padding: 12px; width: 100%; border: 1px solid var(--border-color); box-shadow: none; opacity: 1; animation: none; font-weight: 500; height: 80px; resize: none;"
-                placeholder="أضف ملاحظة..."></textarea>
+            <div style="padding: 24px;">
 
-            <button id="btnTransactionConfirm" onclick="saveTransaction()" class="splash-btn"
-                style="margin-top: 20px; width: 100%;">تأكيد
-                العملية</button>
+                <!-- Amount -->
+                <div style="margin-bottom: 20px;">
+                    <label id="lblTransactionAmount"
+                        style="font-size: 13px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px; text-align: right;">المبلغ</label>
+                    <div style="position: relative; display: flex; align-items: center;">
+                        <div
+                            style="position: absolute; left: 16px; color: var(--text-muted); font-weight: 700; font-size: 13px; pointer-events: none;">
+                            <span id="lblTransactionCurrency">د.ج</span>
+                        </div>
+                        <input type="number" id="transactionAmount" placeholder="0" style="
+                            width: 100%;
+                            background: #f8fafc; 
+                            border: 1px solid #e2e8f0; 
+                            border-radius: 16px; 
+                            padding: 16px 16px 16px 50px; 
+                            font-weight: 700; 
+                            color: var(--text); 
+                            font-size: 18px;
+                            outline: none;
+                            text-align: center;
+                        ">
+                    </div>
+                </div>
+
+                <!-- Note -->
+                <div style="margin-bottom: 30px;">
+                    <label id="lblTransactionNote"
+                        style="font-size: 13px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px; text-align: right;">ملاحظة</label>
+                    <textarea id="transactionNote" placeholder="أضف ملاحظة..." style="
+                        width: 100%;
+                        background: #f8fafc; 
+                        border: 1px solid #e2e8f0; 
+                        border-radius: 16px; 
+                        padding: 16px; 
+                        font-weight: 500; 
+                        color: var(--text); 
+                        font-size: 14px;
+                        outline: none;
+                        height: 100px;
+                        resize: none;
+                        text-align: right;
+                    "></textarea>
+                </div>
+
+                <button id="btnTransactionConfirm" onclick="saveTransaction()" class="btn" style="
+                    width: 100%; 
+                    padding: 16px; 
+                    border-radius: 16px; 
+                    background: var(--primary); 
+                    color: white; 
+                    font-weight: 800; 
+                    font-size: 15px;
+                    border: none;
+                    box-shadow: 0 4px 12px var(--primary-soft);
+                ">تأكيد العملية</button>
+
+            </div>
         </div>
     </div>
 
     <!-- Quick Expense Modal -->
     <div id="quickExpenseModal" class="dev-modal-overlay" onclick="if(event.target === this) closeQuickExpenseModal()">
-        <div class="dev-modal" style="text-align: start;">
-            <button onclick="closeQuickExpenseModal()" class="btn icon-btn"
-                style="position: absolute; top: 15px; right: 15px; width: 30px; height: 30px;"><i
-                    class="fas fa-times"></i></button>
-            <h3 id="quickExpenseTitle" style="font-weight: 800; margin-bottom: 20px;"></h3>
+        <div class="dev-modal"
+            style="max-width: 380px; width: 95%; text-align: left; border-radius: 24px; padding: 0; overflow: hidden;">
 
-            <label id="quickExpenseCategoryLabel"
-                style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px;"></label>
-            <div style="position: relative; margin-bottom: 16px;">
-                <select id="quickExpenseCategory" class="splash-btn"
-                    style="background: var(--bg); color: var(--text); padding: 12px; width: 100%; border: 1px solid var(--border-color); box-shadow: none; opacity: 1; animation: none; font-weight: 600; appearance: none;">
-                    <!-- Populated by JS -->
-                </select>
-                <i class="fas fa-chevron-down"
-                    style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none;"></i>
+            <div style="padding: 24px 24px 0 24px; display: flex; justify-content: space-between; align-items: center;">
+                <button onclick="closeQuickExpenseModal()" class="btn icon-btn"
+                    style="width: 32px; height: 32px; background: transparent; color: var(--text-muted);"><i
+                        class="fas fa-times"></i></button>
+                <h3 id="quickExpenseTitle" style="font-weight: 800; margin: 0; font-size: 18px; color: var(--text);">
+                </h3>
+                <div style="width: 32px;"></div>
             </div>
 
-            <label id="quickExpenseAmountLabel"
-                style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px;"></label>
-            <div style="position: relative; margin-bottom: 16px;">
-                <span id="quickExpenseCurrency"
-                    style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 12px; font-weight: 700;"></span>
-                <input type="number" id="quickExpenseAmount" class="splash-btn"
-                    style="background: var(--bg); color: var(--text); padding: 12px 12px 12px 35px; width: 100%; border: 1px solid var(--border-color); box-shadow: none; opacity: 1; animation: none; font-weight: 700;"
-                    placeholder="0">
-            </div>
+            <div style="padding: 24px;">
 
-            <button id="quickExpenseSaveBtn" onclick="saveQuickExpense()" class="splash-btn"
-                style="margin-top: 20px; width: 100%;"></button>
+                <!-- Category -->
+                <div style="margin-bottom: 20px;">
+                    <label id="quickExpenseCategoryLabel"
+                        style="font-size: 13px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px; text-align: right;"></label>
+                    <div style="position: relative; display: flex; align-items: center;">
+                        <div style="position: absolute; left: 16px; color: var(--text-muted); pointer-events: none;">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <select id="quickExpenseCategory" style="
+                            width: 100%;
+                            background: #f8fafc; 
+                            border: 1px solid #e2e8f0; 
+                            border-radius: 16px; 
+                            padding: 16px 16px 16px 45px; 
+                            font-weight: 700; 
+                            color: var(--text); 
+                            font-size: 15px;
+                            outline: none;
+                            appearance: none;
+                            text-align: right;
+                        ">
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Amount -->
+                <div style="margin-bottom: 30px;">
+                    <label id="quickExpenseAmountLabel"
+                        style="font-size: 13px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px; text-align: right;"></label>
+                    <div style="position: relative; display: flex; align-items: center;">
+                        <div
+                            style="position: absolute; left: 16px; color: var(--text-muted); font-weight: 700; font-size: 13px; pointer-events: none;">
+                            <span id="quickExpenseCurrency"></span>
+                        </div>
+                        <input type="number" id="quickExpenseAmount" placeholder="0" style="
+                            width: 100%;
+                            background: #f8fafc; 
+                            border: 1px solid #e2e8f0; 
+                            border-radius: 16px; 
+                            padding: 16px 16px 16px 50px; 
+                            font-weight: 700; 
+                            color: var(--text); 
+                            font-size: 18px;
+                            outline: none;
+                            text-align: center;
+                        ">
+                    </div>
+                </div>
+
+                <button id="quickExpenseSaveBtn" onclick="saveQuickExpense()" class="btn" style="
+                    width: 100%; 
+                    padding: 16px; 
+                    border-radius: 16px; 
+                    background: var(--primary); 
+                    color: white; 
+                    font-weight: 800; 
+                    font-size: 15px;
+                    border: none;
+                    box-shadow: 0 4px 12px var(--primary-soft);
+                "></button>
+
+            </div>
         </div>
     </div>
 
@@ -5942,6 +6655,8 @@
             if (result.success) {
                 const date = new Date(result.timestamp).toLocaleString(currentLang);
                 localStorage.setItem('last_backup_date', date);
+                localStorage.setItem('last_cloud_backup_ts', result.timestamp);
+                localStorage.setItem('last_seen_backup_ts', result.timestamp);
 
                 // Update UI
                 const dateEl = document.getElementById('lastBackupDatePage');
@@ -5968,6 +6683,8 @@
                 if (attendanceEl) attendanceEl.textContent = attendanceCount;
 
                 showSuccessMessage(t.backup_success);
+                localStorage.setItem('has_new_backup', 'true');
+                updateBackupIndicators();
             } else {
                 // Show error in professional modal
                 showConfirmationModal(
@@ -6157,6 +6874,7 @@
                         const t = translations[currentLang];
                         if (greetingEl) greetingEl.innerText = t.greeting_welcome + "، " + displayName + " 👋";
                     }
+                    checkCloudBackupAvailability();
 
                 } else {
                     // User is logged out
@@ -6176,7 +6894,12 @@
                     }
                 }
             });
+
+            startBackupWatcher();
         });
+
+        // Fallback: if firebase-ready didn't fire yet, retry watcher after short delay
+        setTimeout(() => startBackupWatcher(), 3000);
     </script>
 </body>
 
