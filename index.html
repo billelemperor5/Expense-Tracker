@@ -27,15 +27,15 @@
         }
 
         body.dark {
-            --primary: #a78bfa;
-            --accent: #f472b6;
-            --bg: #0f172a;
-            --surface: #1e293b;
-            --text: #f1f5f9;
-            --text-muted: #94a3b8;
-            --shadow-color: rgba(2, 6, 23, .35);
-            --border-color: rgba(255, 255, 255, 0.1);
-            --primary-soft: rgba(167, 139, 250, 0.15);
+            --primary: #a855f7;
+            --accent: #fb7185;
+            --bg: radial-gradient(circle at top, #020617 0, #020617 35%, #020617 60%, #000000 100%);
+            --surface: rgba(15, 23, 42, 0.96);
+            --text: #e5e7eb;
+            --text-muted: #9ca3af;
+            --shadow-color: rgba(15, 23, 42, 0.7);
+            --border-color: rgba(148, 163, 184, 0.4);
+            --primary-soft: rgba(168, 85, 247, 0.18);
         }
 
         * {
@@ -485,6 +485,12 @@
             transition: transform 0.3s, box-shadow 0.3s;
         }
 
+        body.dark .card {
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.9));
+            border-color: rgba(148, 163, 184, 0.35);
+            box-shadow: 0 14px 40px rgba(15, 23, 42, 0.85);
+        }
+
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 15px 35px var(--shadow-color);
@@ -502,7 +508,8 @@
             font-size: 24px;
             margin-bottom: 4px;
             transition: transform 0.4s;
-            flex-shrink: 0; /* keep icon size stable with long LTR labels */
+            flex-shrink: 0;
+            /* keep icon size stable with long LTR labels */
         }
 
         .card:hover .icon-holder {
@@ -674,12 +681,12 @@
         }
 
         body.dark .app-header {
-            background: rgba(15, 23, 42, 0.7);
+            background: rgba(15, 23, 42, 0.92);
         }
 
         body.dark .dock-nav {
-            background: rgba(30, 41, 59, 0.85);
-            border-color: rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.96);
+            border-color: rgba(148, 163, 184, 0.5);
         }
 
         .backup-toast {
@@ -853,6 +860,12 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
+        body.dark .details-card {
+            background: radial-gradient(circle at top left, rgba(30, 64, 175, 0.18), transparent 55%) var(--surface);
+            border-color: rgba(148, 163, 184, 0.35);
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.85);
+        }
+
         .details-card:hover {
             box-shadow: 0 20px 50px var(--shadow-color);
         }
@@ -881,15 +894,179 @@
         }
 
         .details-table-header {
+            display: none;
+        }
+
+        .expense-row {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 16px 16px 18px;
+            margin-bottom: 14px;
+            border-radius: 20px;
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 24px var(--shadow-color);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+            cursor: pointer;
+        }
+
+        .expense-row:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 26px var(--shadow-color);
+            border-color: color-mix(in srgb, var(--primary) 40%, var(--border-color));
+            background: color-mix(in srgb, var(--bg) 40%, var(--surface));
+        }
+
+        .expense-row-header {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .expense-row-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .expense-row-values {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--border-color);
-            margin-bottom: 15px;
-            font-size: 14px;
-            font-weight: 800;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .expense-row-diff {
+            margin-top: 8px;
+            display: block;
+        }
+
+        .expense-value-card {
+            text-align: center;
+            padding: 8px 10px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px var(--shadow-color);
+            background: var(--bg);
+            font-size: 13px;
+            font-weight: 700;
             color: var(--text-muted);
-            opacity: 0.8;
+        }
+
+        .expense-value-card .value {
+            font-size: 14px;
+        }
+
+        .expense-value-card.budget {
+            background: color-mix(in srgb, var(--primary) 6%, var(--bg));
+        }
+
+        .expense-value-card.actual {
+            background: color-mix(in srgb, #f97316 8%, var(--surface));
+            color: #f97316;
+            border-color: color-mix(in srgb, #f97316 28%, var(--border-color));
+        }
+
+        .expense-value-card.diff {
+            width: 100%;
+            min-width: 0;
+            background: color-mix(in srgb, var(--primary) 6%, var(--bg));
+            border-color: currentColor;
+        }
+
+        .details-cell-label {
+            display: block;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+        }
+
+        /* Desktop layout – جدول احترافي بأعمدة */
+        @media (min-width: 769px) {
+            .details-table-header {
+                display: grid;
+                grid-template-columns: 2fr 1fr 1fr 1fr;
+                padding-bottom: 15px;
+                border-bottom: 2px solid var(--border-color);
+                margin-bottom: 10px;
+                font-size: 14px;
+                font-weight: 800;
+                color: var(--text-muted);
+                opacity: 0.8;
+            }
+
+            .expense-row {
+                display: grid;
+                grid-template-columns: 1.6fr 1fr 1fr 1fr;
+                gap: 12px;
+                padding: 14px 0;
+                margin-bottom: 4px;
+                border-radius: 0;
+                background: transparent;
+                box-shadow: none;
+                border: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .expense-row:hover {
+                transform: none;
+                box-shadow: none;
+                background: color-mix(in srgb, var(--bg) 60%, var(--surface));
+            }
+
+            .expense-row-header {
+                grid-column: 1 / 2;
+                padding-inline-start: 8px;
+            }
+
+            .expense-row-values {
+                display: contents;
+                margin-top: 0;
+            }
+
+            .expense-row-diff {
+                display: contents;
+                margin-top: 0;
+            }
+
+            .expense-value-card {
+                padding: 6px 8px;
+                border-radius: 10px;
+                box-shadow: 0 2px 6px var(--shadow-color);
+            }
+
+            .expense-value-card.diff {
+                width: auto;
+                min-width: 80px;
+            }
+
+            .details-cell-label {
+                display: none;
+            }
+        }
+
+        /* Mobile-specific overrides (الشكل الحالي للهاتف) */
+        @media (max-width: 768px) {
+            .expense-row {
+                display: flex;
+            }
+
+            .expense-row-values {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .expense-row-diff {
+                margin-top: 8px;
+                display: block;
+            }
+
+            .details-cell-label {
+                display: block;
+            }
         }
 
         /* Hide number input spinners */
@@ -1128,6 +1305,11 @@
             box-shadow: 0 10px 30px var(--shadow-color);
             margin-bottom: 20px;
             border: 1px solid var(--border-color);
+        }
+
+        body.dark .calendar-wrapper {
+            background: radial-gradient(circle at top, rgba(56, 189, 248, 0.08), transparent 55%) var(--surface);
+            border-color: rgba(148, 163, 184, 0.35);
         }
 
         .cal-header {
@@ -1749,6 +1931,9 @@
                 attendance_info_step3_desc: 'يمكنك تخصيص اسم مكان عملك وإضافة شعار من خلال زر الإعدادات في الأعلى.',
                 attendance_info_step4: 'سجل الأنشطة',
                 attendance_info_step4_desc: 'تتم حفظ جميع سجلاتك في سجل النشاط. يمكنك عرض التفاصيل الكاملة من خلال زر "عرض المزيد".',
+                attendance_workweek_label: 'طريقة حساب أيام العمل',
+                attendance_workweek_sat_thu: 'من السبت إلى الخميس (الجمعة عطلة)',
+                attendance_workweek_sun_thu: 'من الأحد إلى الخميس (الجمعة والسبت عطلة)',
                 quick_expense_category_label: 'التصنيف',
                 quick_expense_amount_label: 'المبلغ',
                 quick_expense_btn_save: 'حفظ المصروف',
@@ -1963,6 +2148,9 @@
                 attendance_info_step3_desc: 'You can customize your workplace name and add a logo through the settings button at the top.',
                 attendance_info_step4: 'Activity Log',
                 attendance_info_step4_desc: 'All your records are saved in the activity log. You can view full details through the "View More" button.',
+                attendance_workweek_label: 'Work days calculation',
+                attendance_workweek_sat_thu: 'Saturday to Thursday (Friday off)',
+                attendance_workweek_sun_thu: 'Sunday to Thursday (Friday & Saturday off)',
                 quick_expense_category_label: 'Category',
                 quick_expense_amount_label: 'Amount',
                 quick_expense_btn_save: 'Save Expense',
@@ -2162,6 +2350,9 @@
                 attendance_info_step3_desc: 'Vous pouvez personnaliser le nom de votre lieu de travail et ajouter un logo via le bouton paramètres en haut.',
                 attendance_info_step4: 'Journal d\'Activité',
                 attendance_info_step4_desc: 'Tous vos enregistrements sont sauvegardés dans le journal d\'activité. Vous pouvez voir les détails complets via le bouton "Voir Plus".',
+                attendance_workweek_label: 'Calcul des jours de travail',
+                attendance_workweek_sat_thu: 'Du samedi au jeudi (vendredi congé)',
+                attendance_workweek_sun_thu: 'Du dimanche au jeudi (vendredi et samedi congé)',
                 quick_expense_category_label: 'Catégorie',
                 quick_expense_amount_label: 'Montant',
                 quick_expense_btn_save: 'Enregistrer Dépense',
@@ -2291,8 +2482,10 @@
             const t = translations[currentLang];
             const cur = currencies[currentCurrency];
 
+            // Use the same calculations as Expense Manager
+            const totalBudget = expenseManagerData.items.reduce((sum, item) => sum + item.budget, 0);
             const totalExpenses = expenseManagerData.items.reduce((sum, item) => sum + item.actual, 0);
-            const remainingAmount = expenseManagerData.totalIncome - totalExpenses;
+            const remainingAmount = totalBudget - totalExpenses;
 
             return `
             <section class="welcome-card" style="cursor: pointer;" onclick="openWelcomeModal()">
@@ -2369,7 +2562,7 @@
                     <div style="font-weight:900; font-size: 15px;">${t.card_attendance}</div>
                     <div class="lbl">${t.card_attendance_desc}</div>
                 </div>
-                <div class="card click-target" onclick="openAIModal()">
+                <div class="card" onclick="openAIModal()">
                     <div class="icon-holder" style="background:linear-gradient(135deg,#8b5cf6,#d946ef)"><i class="fa-solid fa-robot"></i></div>
                     <div style="font-weight:900; font-size: 15px;">${t.card_analysis}</div>
                     <div class="lbl" style="color: var(--primary); font-weight: 700; font-size: 11px;">${t.card_analysis_desc}</div>
@@ -2948,10 +3141,11 @@
                 }
             }
 
-            const totalIncome = expenseManagerData.totalIncome;
+            // Sync modal numbers with Expense Manager
+            const totalBudget = expenseManagerData.items.reduce((sum, item) => sum + item.budget, 0);
             const totalExpenses = expenseManagerData.items.reduce((sum, item) => sum + item.actual, 0);
-            const netBalance = totalIncome - totalExpenses;
-            const percent = totalIncome > 0 ? Math.min((totalExpenses / totalIncome) * 100, 100) : 0;
+            const netBalance = totalBudget - totalExpenses;
+            const percent = totalBudget > 0 ? Math.min((totalExpenses / totalBudget) * 100, 100) : 0;
 
             netBalanceEl.innerText = `${cur.symbol} ${netBalance}`;
             netBalanceEl.style.color = netBalance >= 0 ? 'var(--primary)' : '#ef4444';
@@ -2960,7 +3154,7 @@
             barEl.style.width = `${percent}%`;
             barEl.style.backgroundColor = percent > 90 ? '#ef4444' : 'var(--primary)';
 
-            if (incomeEl) incomeEl.innerText = `${cur.symbol} ${totalIncome}`;
+            if (incomeEl) incomeEl.innerText = `${cur.symbol} ${totalBudget}`;
             if (expensesEl) expensesEl.innerText = `${cur.symbol} ${totalExpenses}`;
 
             modal.style.display = 'flex';
@@ -3698,7 +3892,7 @@
             const totalBudget = expenseManagerData.items.reduce((acc, item) => acc + item.budget, 0);
             const totalActual = expenseManagerData.items.reduce((acc, item) => acc + item.actual, 0);
             const totalDiff = totalBudget - totalActual;
-            const remaining = expenseManagerData.totalIncome - totalActual;
+            const remaining = totalBudget - totalActual;
 
             // Chart Logic
             let chartGradient = 'conic-gradient(#e2e8f0 0% 100%)'; // Default gray
@@ -3765,7 +3959,7 @@
                 rowsContent = expenseManagerData.items.map((item, index) => {
                     const diff = item.budget - item.actual;
                     const isOverBudget = diff < 0;
-                    const diffColor = isOverBudget ? '#ef4444' : '#2563eb'; // red alert when over budget
+                    const diffColor = isOverBudget ? '#ef4444' : '#16a34a'; // red when over budget, green when under
                     const percent = Math.min((item.actual / (item.budget || 1)) * 100, 100);
                     const progressColor = '#2563eb'; // keep progress neutral (no red alert color)
                     const actualColor = '#f97316';
@@ -3773,63 +3967,51 @@
                     const actualBorder = `color-mix(in srgb, ${actualColor} 25%, var(--border-color))`;
 
                     return `
-                    <div class="expense-row" onclick="openCategoryDetails(${index})" style="display: grid; grid-template-columns: 1.5fr 0.8fr 1fr 0.8fr; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--border-color); align-items: center; transition: background 0.2s; cursor: pointer;">
-                        
-                        <!-- Category Section with Progress -->
-                        <div style="text-align: start; padding-inline-start: 8px;">
-                            <div style="font-weight: 700; font-size: 14px; color: var(--text); margin-bottom: 6px;">${item.category}</div>
+                    <div class="expense-row" onclick="openCategoryDetails(${index})">
+                        <!-- Header: Category + progress -->
+                        <div class="expense-row-header">
+                            <div class="expense-row-top">
+                                <div style="font-weight: 800; font-size: 14px; color: var(--text);">${item.category}</div>
+                                <div style="font-size: 10px; color: var(--text-muted); font-weight: 600;">${Math.round(percent)}%</div>
+                            </div>
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 <div style="flex: 1; height: 6px; background: var(--bg); border-radius: 10px; overflow: hidden;">
                                     <div style="width: ${percent}%; height: 100%; background: ${progressColor}; border-radius: 10px; transition: width 0.5s ease;"></div>
                                 </div>
-                                <div style="font-size: 10px; color: var(--text-muted); font-weight: 600;">${Math.round(percent)}%</div>
                             </div>
                         </div>
 
-                        <!-- Budget -->
-                        <div style="text-align: center; color: var(--text-muted); font-size: 13px; font-weight: 600; background: var(--bg); padding: 6px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 2px 6px var(--shadow-color);">
-                            ${item.budget}
-                        </div>
+                        <!-- Values: Budget & Actual -->
+                        <div class="expense-row-values">
+                            <div class="expense-value-card budget">
+                                <div class="details-cell-label">${t.col_budget}</div>
+                                <div class="value">${item.budget}</div>
+                            </div>
 
-                        <!-- Actual (Editable) -->
-                        <div style="text-align: center;">
-                            <button onclick="event.stopPropagation(); openExpenseEditModal(${index})" class="btn" style="
-                                background: ${actualBg}; 
-                                color: ${actualColor};
-                                border: 1px solid ${actualBorder}; 
-                                padding: 8px 12px; 
-                                border-radius: 10px; 
-                                font-size: 13px; 
-                                font-weight: 700; 
-                                display: inline-flex; 
-                                align-items: center; 
-                                justify-content: center; 
-                                gap: 8px; 
-                                width: 100%; 
-                                transition: all 0.2s;
-                                box-shadow: 0 2px 8px var(--shadow-color);
-                            ">
-                                ${item.actual} <i class="fas fa-pen" style="font-size: 10px; opacity: 0.7;"></i>
-                            </button>
+                            <div class="expense-value-card actual" onclick="event.stopPropagation(); openExpenseEditModal(${index})" style="cursor: pointer;">
+                                <div class="details-cell-label">${t.col_actual}</div>
+                                <div style="
+                                    display: inline-flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    gap: 6px;
+                                    font-size: 14px;
+                                    font-weight: 700;
+                                ">
+                                    <span class="value">${item.actual}</span>
+                                    <i class="fas fa-pen" style="font-size: 10px; opacity: 0.7;"></i>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Difference -->
-                        <div style="text-align: center;">
-                            <div style="
-                                display: inline-flex;
-                                align-items: center;
-                                justify-content: center;
-                                min-width: 70px;
-                                padding: 8px 10px;
-                                border-radius: 10px;
-                                background: var(--bg);
-                                border: 1px solid var(--border-color);
-                                box-shadow: 0 2px 8px var(--shadow-color);
-                                font-weight: 800;
-                                font-size: 13px;
+                        <div class="expense-row-diff">
+                            <div class="expense-value-card diff" style="
                                 color: ${diffColor};
+                                background: color-mix(in srgb, ${diffColor} 10%, var(--bg));
                             ">
-                                ${diff}
+                                <div class="details-cell-label">${t.col_diff}</div>
+                                <div class="value">${diff}</div>
                             </div>
                         </div>
                     </div>
@@ -3904,11 +4086,17 @@
                 </div>
             </div>
 
-            <!-- Summary Cards -->
+            <!-- Total Income Card (Separate) -->
+            <div class="details-card" style="margin-bottom: 16px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; border: none; padding: 20px; text-align: center;">
+                <div style="font-size: 13px; opacity: 0.9; margin-bottom: 8px;">${t.lbl_total_income}</div>
+                <div style="font-size: 28px; font-weight: 800;">${cur.symbol} ${expenseManagerData.totalIncome}</div>
+            </div>
+
+            <!-- Summary Cards (Budget, Expenses, Remaining) -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 12px; margin-bottom: 24px;">
-                <div class="card" style="padding: 12px; align-items: flex-start; background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; border: none;">
-                    <div style="font-size: 11px; opacity: 0.9; margin-bottom: 4px;">${t.lbl_total_income}</div>
-                    <div style="font-size: 16px; font-weight: 800;">${cur.symbol} <span>${expenseManagerData.totalIncome}</span></div>
+                <div class="card" style="padding: 12px; align-items: flex-start;">
+                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">${t.lbl_total_budget || 'Total Budget'}</div>
+                    <div style="font-size: 16px; font-weight: 800; color: var(--primary);">${cur.symbol} ${totalBudget}</div>
                 </div>
                 <div class="card" style="padding: 12px; align-items: flex-start;">
                     <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">${t.lbl_total_expenses}</div>
@@ -4694,38 +4882,54 @@
         }
 
         function saveBudgetSetup() {
-            const income = Number(document.getElementById('setupTotalIncome').value);
+            // 1. Get the Gross Income from input
+            const incomeInput = Number(document.getElementById('setupTotalIncome').value);
+
             const rows = document.querySelectorAll('.setup-row');
             const newItems = [];
 
+            // 2. Collect all categories and their budgets
             rows.forEach(row => {
                 const name = row.querySelector('.cat-name').value;
                 const budget = Number(row.querySelector('.cat-budget').value);
+
+
                 if (name) {
-                    // Try to preserve actual if category exists
+                    // Preserve actual expenses if category exists, but do NOT use it for income calc
                     const existing = expenseManagerData.items.find(i => i.category === name);
                     const actual = existing ? existing.actual : 0;
                     newItems.push({ category: name, budget: budget, actual: actual });
                 }
             });
 
-            expenseManagerData.totalIncome = income;
+            // 3. Calculate Total Budget Sum
+            // Rule: Total Income = Income Input
+            // We ignore Actuals and Diffs completely for this calculation.
+            let totalBudgets = 0;
+            newItems.forEach(item => {
+                totalBudgets += item.budget;
+            });
+
+            const updatedIncome = incomeInput;
+
+            // 4. Update Data
+            expenseManagerData.totalIncome = updatedIncome;
             expenseManagerData.items = newItems;
 
-            logActivity('log_budget_update', `Income: ${income}, Categories: ${newItems.length}`);
+            logActivity('log_budget_update', `Income updated to ${updatedIncome}`);
             saveExpenses();
 
-            // Re-populate view mode and switch back
-            // Actually, we should probably close or just update view. 
-            // Let's update view and stay in modal? Or close?
-            // User usually expects close on save.
             closeBudgetModal();
             renderView('expenses');
             updateNotificationBadge();
         }
 
         // --- Attendance Logic ---
-        let attendanceData = JSON.parse(localStorage.getItem('attendanceData')) || { records: {}, activities: [] };
+        let attendanceData = JSON.parse(localStorage.getItem('attendanceData')) || {
+            records: {},
+            activities: [],
+            settings: { workWeek: 'sat_thu' } // default: Saturday–Thursday
+        };
         let selectedDate = null;
         let currentCalendarDate = new Date();
 
@@ -4737,6 +4941,7 @@
 
             // Workplace Info
             const workplace = attendanceData.workplace || null;
+            const attendanceSettings = attendanceData.settings || { workWeek: 'sat_thu' };
 
             // --- INITIAL SETUP VIEW (Inline) ---
             if (!workplace) {
@@ -4764,9 +4969,17 @@
                 <div style="font-size: 13px; font-weight: 600; color: var(--primary);">${t.setup_logo_optional}</div>
             </div>
 
-            <div style="margin-bottom: 30px; text-align: start;">
+            <div style="margin-bottom: 22px; text-align: start;">
                 <label style="display: block; margin-bottom: 10px; font-weight: 700; font-size: 14px;">${t.setup_workspace_name_label}</label>
                 <input type="text" id="setupWorkplaceName" placeholder="${t.setup_workspace_name_placeholder}" style="width: 100%; padding: 14px; border-radius: 14px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text); font-family: inherit; font-size: 15px; transition: border-color 0.3s;">
+            </div>
+
+            <div style="margin-bottom: 24px; text-align: start;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 700; font-size: 13px;">${t.attendance_workweek_label || 'طريقة حساب أيام العمل'}</label>
+                <select id="attendanceWorkWeekMode" style="width: 100%; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text); font-family: inherit; font-size: 13px;">
+                    <option value="sat_thu" ${attendanceSettings.workWeek === 'sat_thu' ? 'selected' : ''}>${t.attendance_workweek_sat_thu || 'من السبت إلى الخميس (الجمعة عطلة)'}</option>
+                    <option value="sun_thu" ${attendanceSettings.workWeek === 'sun_thu' ? 'selected' : ''}>${t.attendance_workweek_sun_thu || 'من الأحد إلى الخميس (الجمعة والسبت عطلة)'}</option>
+                </select>
             </div>
 
             <button onclick="saveAttendanceSetup()" class="splash-btn" style="width: 100%; justify-content: center; font-size: 16px; padding: 14px;">
@@ -4780,6 +4993,10 @@
             const logoHTML = workplace.logo
                 ? `<img src="${workplace.logo}" style="width: 38px; height: 38px; border-radius: 12px; object-fit: cover; border: 1px solid var(--border-color);">`
                 : `<div style="width: 38px; height: 38px; border-radius: 12px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center;"><i class="fas fa-building"></i></div>`;
+
+            const workWeekLabel = attendanceSettings.workWeek === 'sun_thu'
+                ? t.attendance_workweek_sun_thu || ''
+                : t.attendance_workweek_sat_thu || '';
 
             const headerContent = `
                 <div style="display: flex; align-items: center; gap: 12px;">
@@ -4799,11 +5016,20 @@
             let presentCount = 0;
             let absentCount = 0;
 
-            // Calculate working days (excluding Fridays)
+            // Calculate working days based on selected work week
+            const workWeek = attendanceSettings.workWeek || 'sat_thu';
             let workDaysCount = 0;
             for (let i = 1; i <= daysInMonth; i++) {
                 const d = new Date(year, month, i);
-                if (d.getDay() !== 5) workDaysCount++; // 5 is Friday
+                const day = d.getDay(); // 0=Sun, 6=Sat
+
+                if (workWeek === 'sun_thu') {
+                    // Work from Sunday (0) to Thursday (4)
+                    if (day >= 0 && day <= 4) workDaysCount++;
+                } else {
+                    // Default: Saturday–Thursday (exclude Friday only)
+                    if (day !== 5) workDaysCount++; // 5 is Friday
+                }
             }
 
             // Count records
@@ -5051,9 +5277,17 @@
                         <div style="font-size: 12px; color: var(--text-muted);">${t.setup_logo_optional}</div>
                     </div>
 
-                    <div style="margin-bottom: 25px; text-align: start;">
+                    <div style="margin-bottom: 18px; text-align: start;">
                         <label style="display: block; margin-bottom: 8px; font-weight: 700; font-size: 13px;">${t.setup_workspace_name_label}</label>
                         <input type="text" id="setupWorkplaceName" value="${workplace?.name || ''}" placeholder="${t.setup_workspace_name_placeholder}" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text); font-family: inherit;">
+                    </div>
+
+                    <div style="margin-bottom: 22px; text-align: start;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 700; font-size: 13px;">${t.attendance_workweek_label || 'طريقة حساب أيام العمل'}</label>
+                        <select id="attendanceWorkWeekMode" style="width: 100%; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text); font-family: inherit; font-size: 13px;">
+                            <option value="sat_thu" ${attendanceSettings.workWeek === 'sat_thu' ? 'selected' : ''}>${t.attendance_workweek_sat_thu || 'من السبت إلى الخميس'}</option>
+                            <option value="sun_thu" ${attendanceSettings.workWeek === 'sun_thu' ? 'selected' : ''}>${t.attendance_workweek_sun_thu || 'من الأحد إلى الخميس'}</option>
+                        </select>
                     </div>
 
                     <button onclick="saveAttendanceSetup()" class="splash-btn" style="width: 100%; justify-content: center;">${t.btn_save_start}</button>
@@ -5138,10 +5372,16 @@
             const logoPreview = document.getElementById('setupLogoPreview');
             const hasLogo = logoPreview.style.display === 'block';
 
+            const workWeekSelect = document.getElementById('attendanceWorkWeekMode');
+            const workWeekMode = workWeekSelect ? workWeekSelect.value : (attendanceData.settings?.workWeek || 'sat_thu');
+
             attendanceData.workplace = {
                 name: name,
                 logo: hasLogo ? logoPreview.src : ''
             };
+
+            attendanceData.settings = attendanceData.settings || {};
+            attendanceData.settings.workWeek = workWeekMode;
 
             localStorage.setItem('attendanceData', JSON.stringify(attendanceData));
             renderView('attendance');
@@ -6034,14 +6274,19 @@
     </div>
 
     <!-- Category Details Modal -->
-    <div id="categoryDetailsModal" class="dev-modal-overlay" onclick="if(event.target === this) closeCategoryDetails()" style="z-index: 2400; display: none;">
+    <div id="categoryDetailsModal" class="dev-modal-overlay" onclick="if(event.target === this) closeCategoryDetails()"
+        style="z-index: 2400; display: none;">
         <div class="dev-modal" style="max-width: 420px; width: 95%; padding: 0; overflow: hidden;">
-            <div style="padding: 18px 18px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color);">
+            <div
+                style="padding: 18px 18px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color);">
                 <div>
-                    <div id="catDetailsLabel" style="font-size: 13px; color: var(--text-muted); margin-bottom: 4px;"></div>
+                    <div id="catDetailsLabel" style="font-size: 13px; color: var(--text-muted); margin-bottom: 4px;">
+                    </div>
                     <div id="catDetailsTitle" style="font-weight: 800; font-size: 18px; color: var(--text);"></div>
                 </div>
-                <button onclick="closeCategoryDetails()" class="btn icon-btn" style="width: 32px; height: 32px; background: var(--bg); border-radius: 10px; color: var(--text-muted);"><i class="fas fa-times"></i></button>
+                <button onclick="closeCategoryDetails()" class="btn icon-btn"
+                    style="width: 32px; height: 32px; background: var(--bg); border-radius: 10px; color: var(--text-muted);"><i
+                        class="fas fa-times"></i></button>
             </div>
             <div id="catDetailsBody" style="padding: 18px; display: flex; flex-direction: column; gap: 14px;"></div>
         </div>
@@ -6084,7 +6329,7 @@
                 </div>
 
                 <!-- AI Assistant -->
-                <div class="smart-action-item" onclick="toggleSmartActions(); openAIModal()">
+                <div class="smart-action-item" onclick="toggleSmartActions(); renderView('expense_insights')">
                     <div class="smart-action-icon" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">
                         <i class="fas fa-robot"></i>
                     </div>
