@@ -27,15 +27,15 @@
         }
 
         body.dark {
-            --primary: #a855f7;
-            --accent: #fb7185;
-            --bg: radial-gradient(circle at top, #020617 0, #020617 35%, #020617 60%, #000000 100%);
-            --surface: rgba(15, 23, 42, 0.96);
-            --text: #e5e7eb;
-            --text-muted: #9ca3af;
-            --shadow-color: rgba(15, 23, 42, 0.7);
-            --border-color: rgba(148, 163, 184, 0.4);
-            --primary-soft: rgba(168, 85, 247, 0.18);
+            --primary: #a78bfa;
+            --accent: #f472b6;
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --shadow-color: rgba(2, 6, 23, .35);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --primary-soft: rgba(167, 139, 250, 0.15);
         }
 
         * {
@@ -485,12 +485,6 @@
             transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        body.dark .card {
-            background: linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.9));
-            border-color: rgba(148, 163, 184, 0.35);
-            box-shadow: 0 14px 40px rgba(15, 23, 42, 0.85);
-        }
-
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 15px 35px var(--shadow-color);
@@ -681,12 +675,12 @@
         }
 
         body.dark .app-header {
-            background: rgba(15, 23, 42, 0.92);
+            background: rgba(15, 23, 42, 0.7);
         }
 
         body.dark .dock-nav {
-            background: rgba(15, 23, 42, 0.96);
-            border-color: rgba(148, 163, 184, 0.5);
+            background: rgba(30, 41, 59, 0.85);
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .backup-toast {
@@ -858,12 +852,6 @@
             overflow: hidden;
             border: 1px solid var(--border-color);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        body.dark .details-card {
-            background: radial-gradient(circle at top left, rgba(30, 64, 175, 0.18), transparent 55%) var(--surface);
-            border-color: rgba(148, 163, 184, 0.35);
-            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.85);
         }
 
         .details-card:hover {
@@ -1305,11 +1293,6 @@
             box-shadow: 0 10px 30px var(--shadow-color);
             margin-bottom: 20px;
             border: 1px solid var(--border-color);
-        }
-
-        body.dark .calendar-wrapper {
-            background: radial-gradient(circle at top, rgba(56, 189, 248, 0.08), transparent 55%) var(--surface);
-            border-color: rgba(148, 163, 184, 0.35);
         }
 
         .cal-header {
@@ -1874,7 +1857,7 @@
                 action_record_expense: 'تسجيل مصروف',
                 action_deposit: 'إيداع مبلغ',
                 action_attendance: 'سجل الحضور',
-                action_ai: 'مساعد الذكاء',
+                action_ai: 'تحليل المصاريف',
                 quick_expense_title: 'تسجيل مصروف سريع',
                 lbl_category: 'التصنيف',
                 no_categories: 'لا توجد تصنيفات',
@@ -2076,7 +2059,7 @@
                 action_record_expense: 'Record Expense',
                 action_deposit: 'Deposit Amount',
                 action_attendance: 'Attendance Log',
-                action_ai: 'AI Assistant',
+                action_ai: 'Expense Analysis',
                 // Backup
                 backup_title: 'Backup & Restore',
                 backup_desc: 'Securely save your data to the cloud',
@@ -2278,7 +2261,7 @@
                 action_record_expense: 'Enregistrer Dépense',
                 action_deposit: 'Dépôt Montant',
                 action_attendance: 'Registre Présence',
-                action_ai: 'Assistant IA',
+                action_ai: 'Analyse Dépenses',
                 quick_expense_title: 'Enregistrement Rapide',
                 lbl_category: 'Catégorie',
                 no_categories: 'Aucune catégorie disponible',
@@ -6331,9 +6314,9 @@
                 <!-- AI Assistant -->
                 <div class="smart-action-item" onclick="toggleSmartActions(); renderView('expense_insights')">
                     <div class="smart-action-icon" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">
-                        <i class="fas fa-robot"></i>
+                        <i class="fas fa-chart-pie"></i>
                     </div>
-                    <div class="smart-action-label"></div>
+                    <div class="smart-action-label" data-key="action_ai"></div>
                 </div>
             </div>
         </div>
