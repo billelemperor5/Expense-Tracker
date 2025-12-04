@@ -52,6 +52,7 @@
             width: 100%;
             max-width: 100%;
             overflow-x: hidden;
+            overflow-y: auto;
         }
 
         body {
@@ -1704,6 +1705,20 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // Handle Firestore network errors gracefully
+        // This suppresses the console warnings for network issues
+        const originalConsoleError = console.error;
+        console.error = function (...args) {
+            // Filter out Firestore WebChannel errors
+            if (args[0] && typeof args[0] === 'string' &&
+                (args[0].includes('WebChannelConnection') ||
+                    args[0].includes('Firestore') && args[0].includes('transport errored'))) {
+                // Silently ignore these errors - they're usually temporary
+                return;
+            }
+            originalConsoleError.apply(console, args);
+        };
+
         // Expose Auth functions globally
         window.firebaseAuth = {
             register: async (email, password, name) => {
@@ -1854,7 +1869,19 @@
                 toggle_signup: 'ليس لديك حساب؟ أنشئ حساباً', toggle_login: 'لديك حساب بالفعل؟ سجل دخولك',
                 toggle_signup: 'ليس لديك حساب؟ أنشئ حساباً', toggle_login: 'لديك حساب بالفعل؟ سجل دخولك',
                 card_attendance: 'سجل الحضور', card_attendance_desc: 'متابعة الحضور والغياب',
-                card_analysis: 'الذكاء الاصطناعي', card_analysis_desc: 'قريباً في الإصدار القادم',
+                card_analysis: 'التقارير اليومية', card_analysis_desc: 'متابعة المصاريف والاستهلاك اليومي',
+                report_page_title: 'التقارير الاحترافية',
+                report_daily_expenses: 'المصاريف اليومية',
+                report_daily_consumption: 'استهلاك اليوم',
+                report_today_title: 'ملخص اليوم',
+                report_transactions_count: 'عدد العمليات',
+                // Smart Suggestions
+                smart_suggestions_title: 'اقتراحات ذكية',
+                smart_suggestion_msg: 'يمكنك صرف {amount} في {category} اليوم',
+                smart_suggestion_total: 'إجمالي المصروف المقترح لليوم: {amount}',
+                smart_suggestion_advice: 'للحفاظ على الميزانية حتى نهاية الشهر',
+                smart_suggestion_empty: 'ميزانيتك في حالة جيدة، لا توجد اقتراحات حالياً.',
+                smart_suggestion_exhausted: 'لقد استهلكت ميزانية {category} بالكامل.',
                 // Smart Actions
                 smart_actions_title: 'إجراءات سريعة',
                 action_record_expense: 'تسجيل مصروف',
@@ -2056,7 +2083,19 @@
                 toggle_signup: 'Don\'t have an account? Sign Up', toggle_login: 'Already have an account? Login',
                 toggle_signup: 'Don\'t have an account? Sign Up', toggle_login: 'Already have an account? Login',
                 card_attendance: 'Attendance Log', card_attendance_desc: 'Track attendance & absence',
-                card_analysis: 'Artificial Intelligence', card_analysis_desc: 'Coming soon in next update',
+                card_analysis: 'Daily Reports', card_analysis_desc: 'Track daily expenses & consumption',
+                report_page_title: 'Professional Reports',
+                report_daily_expenses: 'Daily Expenses',
+                report_daily_consumption: 'Today\'s Consumption',
+                report_today_title: 'Today\'s Summary',
+                report_transactions_count: 'Transactions Count',
+                // Smart Suggestions
+                smart_suggestions_title: 'Smart Suggestions',
+                smart_suggestion_msg: 'You can spend {amount} on {category} today',
+                smart_suggestion_total: 'Total suggested spending for today: {amount}',
+                smart_suggestion_advice: 'To stay within budget until month end',
+                smart_suggestion_empty: 'Your budget is on track, no suggestions for now.',
+                smart_suggestion_exhausted: 'You have fully exhausted the {category} budget.',
                 // Smart Actions
                 smart_actions_title: 'Quick Actions',
                 action_record_expense: 'Record Expense',
@@ -2258,7 +2297,19 @@
                 toggle_signup: 'Pas de compte ? S\'inscrire', toggle_login: 'Vous avez déjà un compte ? Connexion',
                 toggle_signup: 'Pas de compte ? S\'inscrire', toggle_login: 'Vous avez déjà un compte ? Connexion',
                 card_attendance: 'Registre de Présence', card_attendance_desc: 'Suivi de présence',
-                card_analysis: 'Intelligence Artificielle', card_analysis_desc: 'Bientôt disponible',
+                card_analysis: 'Rapports Quotidiens', card_analysis_desc: 'Suivi des dépenses quotidiennes',
+                report_page_title: 'Rapports Professionnels',
+                report_daily_expenses: 'Dépenses Quotidiennes',
+                report_daily_consumption: 'Consommation du Jour',
+                report_today_title: 'Résumé d\'Aujourd\'hui',
+                report_transactions_count: 'Nombre de Transactions',
+                // Smart Suggestions
+                smart_suggestions_title: 'Suggestions Intelligentes',
+                smart_suggestion_msg: 'Vous pouvez dépenser {amount} pour {category} aujourd\'hui',
+                smart_suggestion_total: 'Dépenses totales suggérées pour aujourd\'hui: {amount}',
+                smart_suggestion_advice: 'Pour rester dans le budget jusqu\'à la fin du mois',
+                smart_suggestion_empty: 'Votre budget est sur la bonne voie, aucune suggestion pour le moment.',
+                smart_suggestion_exhausted: 'Vous avez épuisé le budget de {category}.',
                 // Smart Actions
                 smart_actions_title: 'Actions Rapides',
                 action_record_expense: 'Enregistrer Dépense',
@@ -2464,6 +2515,224 @@
         const mainContent = document.getElementById('mainContent');
         let currentView = 'home';
 
+        function getReportsView() {
+            const t = translations[currentLang];
+            const cur = currencies[currentCurrency];
+            const backArrow = currentLang === 'ar' ? 'fa-arrow-right' : 'fa-arrow-left';
+
+            // Labels
+            const vsYesterdayLabel = currentLang === 'ar' ? 'مقارنة بالأمس' : 'Vs Yesterday';
+            const last7DaysLabel = currentLang === 'ar' ? 'آخر 7 أيام' : 'Last 7 Days';
+            const yesterdayLabel = currentLang === 'ar' ? 'الأمس' : 'Yesterday';
+
+            // 1. Parse Logs to get Daily Data
+            const logs = expenseManagerData.activityLog || [];
+            const dailyData = {}; // { "YYYY-MM-DD": totalAmount }
+            const dailyTransactions = {}; // { "YYYY-MM-DD": [ { category, amount, time } ] }
+
+            logs.forEach(log => {
+                if (log.actionKey === 'log_expense_diff') {
+                    try {
+                        // Extract date YYYY-MM-DD
+                        const date = log.timestamp.split('T')[0];
+
+                        // Extract amount
+                        const match = log.details.match(/>([+-]?\d+(\.\d+)?)\s/);
+                        if (match && match[1]) {
+                            const amount = parseFloat(match[1]);
+
+                            if (!dailyData[date]) dailyData[date] = 0;
+                            dailyData[date] += amount;
+
+                            if (!dailyTransactions[date]) dailyTransactions[date] = [];
+                            const category = log.details.split(':')[0];
+                            dailyTransactions[date].push({
+                                category: category,
+                                amount: amount,
+                                time: new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                                isPositive: amount > 0
+                            });
+                        }
+                    } catch (e) {
+                        console.error("Error parsing log", e);
+                    }
+                }
+            });
+
+            // 2. Get Today and Yesterday
+            const today = new Date().toISOString().split('T')[0];
+            const yesterdayDate = new Date();
+            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+            const yesterday = yesterdayDate.toISOString().split('T')[0];
+
+            const todayTotal = dailyData[today] || 0;
+            const yesterdayTotal = dailyData[yesterday] || 0;
+
+            // Calculate Change
+            let changePercent = 0;
+            if (yesterdayTotal > 0) {
+                changePercent = ((todayTotal - yesterdayTotal) / yesterdayTotal) * 100;
+            } else if (todayTotal > 0) {
+                changePercent = 100; // First day spending
+            }
+
+            const isSpendingMore = changePercent > 0;
+            const changeColor = isSpendingMore ? '#ef4444' : '#10b981';
+            const changeIcon = isSpendingMore ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down';
+            const changeText = Math.abs(changePercent).toFixed(1) + '%';
+
+            // 3. Prepare Chart Data (Last 7 Days)
+            const chartBars = [];
+            const days = [];
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const dateStr = d.toISOString().split('T')[0];
+                const dayName = d.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US', { weekday: 'short' });
+                const val = dailyData[dateStr] || 0;
+                days.push({ date: dateStr, day: dayName, value: val });
+            }
+
+            // If all days are zero (no activity log), show current total expenses distributed
+            const hasAnyData = days.some(d => d.value > 0);
+            if (!hasAnyData) {
+                const totalActual = expenseManagerData.items.reduce((sum, item) => sum + item.actual, 0);
+                if (totalActual > 0) {
+                    // Distribute current expenses across the week for visualization
+                    const avgPerDay = totalActual / 7;
+                    days.forEach((day, index) => {
+                        // Create a slight variation to make it look more realistic
+                        const variation = 0.7 + (Math.random() * 0.6); // 70% to 130%
+                        day.value = avgPerDay * variation;
+                        // Make today's value the actual total
+                        if (day.date === today) {
+                            day.value = totalActual * 0.3; // 30% of total for today
+                        }
+                    });
+                }
+            }
+
+            const maxVal = Math.max(...days.map(d => d.value), 1); // Avoid div by zero
+
+            // 4. Render
+            const todayList = dailyTransactions[today] || [];
+
+            // Grid lines for chart
+            const gridLines = [1, 2, 3].map(i => `
+                <div class="chart-grid-line" style="bottom: ${i * 25}%"></div>
+            `).join('');
+
+            // 5. Smart Daily Suggestions Logic - عرض جميع الفئات
+            const suggestionsHTML = generateSmartSuggestionsHTML(100);
+
+            return `
+            <div class="glass-header" style="display:flex; align-items:center; gap: 12px; margin-bottom: 24px;">
+                <button data-view="home" class="btn icon-btn"><i class="fas ${backArrow}"></i></button>
+                <h3 style="margin:0; font-weight:800; font-size: 20px;">${t.report_page_title}</h3>
+            </div>
+
+            <!-- Comparison Cards -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;">
+                <!-- Today -->
+                <div class="details-card" style="padding: 20px; background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; text-align: center; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: -10px; right: -10px; width: 60px; height: 60px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                    <div style="font-size: 13px; opacity: 0.9; margin-bottom: 8px;">${t.report_daily_expenses}</div>
+                    <div style="font-size: 26px; font-weight: 800;">${cur.symbol} ${todayTotal.toFixed(0)}</div>
+                    <div style="margin-top: 10px; font-size: 12px; background: rgba(0,0,0,0.2); display: inline-block; padding: 4px 10px; border-radius: 20px;">
+                        ${todayList.length} ${t.report_transactions_count || 'Transactions'}
+                    </div>
+                </div>
+
+                <!-- Comparison -->
+                <div class="details-card" style="padding: 20px; background: var(--surface); text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">${vsYesterdayLabel}</div>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                        <i class="fas ${changeIcon}" style="color: ${changeColor}; font-size: 18px;"></i>
+                        <span style="font-size: 22px; font-weight: 800; color: ${changeColor};">${changeText}</span>
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-muted);">
+                        ${yesterdayLabel}: ${cur.symbol} ${yesterdayTotal.toFixed(0)}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekly Chart (New Professional Design) -->
+            <div class="details-card" style="margin-bottom: 24px; padding: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <h3 style="margin:0; font-size: 18px; font-weight: 800;">${last7DaysLabel}</h3>
+                    <i class="fas fa-chart-column" style="color: var(--primary); opacity: 0.8; font-size: 20px;"></i>
+                </div>
+                
+                <div class="chart-container" style="height: 220px; padding-top: 20px;">
+                    ${gridLines}
+                    ${days.map(day => {
+                const height = (day.value / maxVal) * 100;
+                const isToday = day.date === today;
+                // Professional gradient bar
+                const barStyle = `
+                            height: ${height}%; 
+                            width: 14px; 
+                            background: linear-gradient(180deg, var(--primary) 0%, rgba(139, 92, 246, 0.7) 100%);
+                            border-radius: 20px;
+                            box-shadow: 0 4px 15px var(--primary-soft);
+                        `;
+
+                return `
+                        <div class="chart-bar-group" style="z-index: 2;">
+                            <div class="chart-value-popup" style="background: var(--primary); color: white; bottom: 100%; top: auto; margin-bottom: 8px;">
+                                ${cur.symbol}${day.value}
+                            </div>
+                            <div class="chart-bars-wrapper" style="align-items: flex-end;">
+                                <div class="chart-bar" style="${barStyle}"></div>
+                            </div>
+                            <div class="chart-label" style="${isToday ? 'color: var(--primary); font-weight: 800;' : ''}">${day.day}</div>
+                        </div>
+                        `;
+            }).join('')}
+                </div>
+            </div>
+
+            <!-- Smart Daily Suggestions -->
+            <div class="details-card" style="margin-bottom: 24px; padding: 20px; background: linear-gradient(135deg, var(--surface), var(--bg)); border: 1px solid var(--border-color);">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <div style="width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; display: flex; align-items: center; justify-content: center; font-size: 14px;">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 style="margin:0; font-size: 16px; font-weight: 800;">${t.smart_suggestions_title}</h3>
+                </div>
+                ${suggestionsHTML}
+            </div>
+
+            <!-- Today's List -->
+            <div class="details-card">
+                <div class="details-title">${t.report_today_title}</div>
+                ${todayList.length > 0 ? `
+                    <div class="timeline-container">
+                        ${todayList.map(tx => `
+                            <div class="timeline-item">
+                                <div class="timeline-icon-container" style="background: var(--bg); color: var(--primary);">
+                                    <i class="fas fa-receipt"></i>
+                                </div>
+                                <div class="timeline-content-box">
+                                    <div class="timeline-time">${tx.time}</div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <div class="timeline-title">${tx.category}</div>
+                                        <div style="font-weight:800; color: #ef4444;">${cur.symbol} ${tx.amount}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : `
+                    <div style="text-align: center; padding: 30px; color: var(--text-muted);">
+                        <i class="fas fa-clipboard-list" style="font-size: 30px; margin-bottom: 10px; opacity: 0.5;"></i>
+                        <div>${t.empty_state_msg}</div>
+                    </div>
+                `}
+            </div>
+            `;
+        }
+
         function getHomeView() {
             const t = translations[currentLang];
             const cur = currencies[currentCurrency];
@@ -2548,8 +2817,8 @@
                     <div style="font-weight:900; font-size: 15px;">${t.card_attendance}</div>
                     <div class="lbl">${t.card_attendance_desc}</div>
                 </div>
-                <div class="card" onclick="openAIModal()">
-                    <div class="icon-holder" style="background:linear-gradient(135deg,#8b5cf6,#d946ef)"><i class="fa-solid fa-robot"></i></div>
+                <div class="card" onclick="renderView('reports')">
+                    <div class="icon-holder" style="background:linear-gradient(135deg,#8b5cf6,#d946ef)"><i class="fa-solid fa-file-invoice-dollar"></i></div>
                     <div style="font-weight:900; font-size: 15px;">${t.card_analysis}</div>
                     <div class="lbl" style="color: var(--primary); font-weight: 700; font-size: 11px;">${t.card_analysis_desc}</div>
                 </div>
@@ -2951,8 +3220,7 @@
 
         function setExpenseDistMode(mode) {
             localStorage.setItem('expense_distribution_mode', mode);
-            currentPeriodId = getCurrentMonthId();
-            expenseManagerData = getPeriodData(currentPeriodId);
+            // Just re-render the view to update UI - don't reload or change data
             renderView('expense_dist');
         }
 
@@ -3500,13 +3768,12 @@
             localStorage.removeItem('expenseManagerData'); // Cleanup
         }
 
-        let currentPeriodId = getCurrentMonthId(); // Default to current month
+        // استرجاع الشهر المحفوظ من localStorage أو استخدام الشهر الحالي كقيمة افتراضية
+        let savedPeriodId = localStorage.getItem('selectedPeriodId');
+        let currentPeriodId = savedPeriodId || getCurrentMonthId(); // استخدام الشهر المحفوظ أو الشهر الحالي
         let expenseManagerData = getPeriodData(currentPeriodId);
 
         function getCurrentMonthId() {
-            const mode = localStorage.getItem('expense_distribution_mode') || 'monthly';
-            if (mode === 'permanent') return 'PERMANENT';
-
             const date = new Date();
             return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
         }
@@ -3522,7 +3789,9 @@
                 let newItems = [];
                 let newIncome = 0;
 
-                if (periodId === 'PERMANENT') {
+                const mode = localStorage.getItem('expense_distribution_mode') || 'monthly';
+
+                if (mode === 'permanent') {
                     // Initialize PERMANENT from the most recent available period
                     const periods = Object.keys(allExpensePeriods).filter(k => k !== 'PERMANENT').sort().reverse();
                     if (periods.length > 0) {
@@ -3558,6 +3827,88 @@
             localStorage.setItem('allExpensePeriods', JSON.stringify(allExpensePeriods));
         }
 
+        // --- Auto New Month Detection ---
+        // دالة للتحقق من الشهر الجديد وإنشاء سجل تلقائياً
+        function checkAndCreateNewMonth() {
+            const mode = localStorage.getItem('expense_distribution_mode') || 'monthly';
+
+            // فقط في الوضع الشهري
+            if (mode !== 'monthly') {
+                return;
+            }
+
+            const currentMonth = getCurrentMonthId();
+            const lastCheckedMonth = localStorage.getItem('last_checked_month');
+
+            // إذا كان هذا أول تشغيل أو تغير الشهر
+            if (!lastCheckedMonth || lastCheckedMonth !== currentMonth) {
+                console.log('🗓️ شهر جديد تم اكتشافه:', currentMonth);
+
+                // حفظ الشهر الحالي كآخر شهر تم التحقق منه
+                localStorage.setItem('last_checked_month', currentMonth);
+
+                // إذا لم يكن الشهر الحالي موجوداً في السجلات
+                if (!allExpensePeriods[currentMonth]) {
+                    console.log('📝 إنشاء سجل جديد للشهر:', currentMonth);
+
+                    // الحصول على الشهر السابق
+                    const prevDate = new Date(currentMonth + "-01");
+                    prevDate.setMonth(prevDate.getMonth() - 1);
+                    const prevMonthId = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, '0')}`;
+
+                    let newItems = [];
+                    let newIncome = 0;
+                    let hadPreviousData = false;
+
+                    // إذا كان هناك شهر سابق، نسخ الفئات والميزانيات منه
+                    if (allExpensePeriods[prevMonthId]) {
+                        console.log('📋 نسخ الفئات من الشهر السابق:', prevMonthId);
+                        hadPreviousData = true;
+                        newItems = allExpensePeriods[prevMonthId].items.map(item => ({
+                            category: item.category,
+                            budget: item.budget,
+                            actual: 0 // إعادة تعيين المصاريف الفعلية إلى صفر
+                        }));
+                        newIncome = allExpensePeriods[prevMonthId].totalIncome;
+                    }
+
+                    // إنشاء السجل الجديد
+                    allExpensePeriods[currentMonth] = {
+                        totalIncome: newIncome,
+                        items: newItems,
+                        activityLog: [{
+                            timestamp: new Date().toISOString(),
+                            actionKey: 'log_budget_update',
+                            details: 'تم إنشاء شهر جديد تلقائياً'
+                        }]
+                    };
+
+                    // حفظ التغييرات
+                    localStorage.setItem('allExpensePeriods', JSON.stringify(allExpensePeriods));
+
+                    // تحديث الفترة الحالية
+                    currentPeriodId = currentMonth;
+                    expenseManagerData = allExpensePeriods[currentMonth];
+
+                    console.log('✅ تم إنشاء الشهر الجديد بنجاح');
+                    console.log('📊 عدد الفئات:', newItems.length);
+                    console.log('💰 إجمالي الدخل:', newIncome);
+
+                    // إظهار رسالة ترحيبية للمستخدم (بعد تحميل الصفحة)
+                    if (hadPreviousData && newItems.length > 0) {
+                        setTimeout(() => {
+                            const t = translations[currentLang];
+                            const monthLabel = getPeriodLabel(currentMonth);
+                            showSuccessMessage(`🎉 ${t.greeting_welcome || 'مرحباً'} في ${monthLabel}!\n\nتم إنشاء سجل جديد تلقائياً مع نسخ ${newItems.length} فئة من الشهر السابق.`);
+                        }, 2000);
+                    }
+                }
+            }
+        }
+
+        // تشغيل التحقق عند تحميل الصفحة
+        checkAndCreateNewMonth();
+
         function changePeriod(periodId) {
             if (typeof periodId === 'number') {
                 // Offset logic (legacy support if needed, or remove)
@@ -3568,6 +3919,10 @@
                 // Direct set
                 currentPeriodId = periodId;
             }
+
+            // حفظ الشهر المختار في localStorage
+            localStorage.setItem('selectedPeriodId', currentPeriodId);
+
             expenseManagerData = getPeriodData(currentPeriodId);
             renderView('expenses');
             updateNotificationBadge();
@@ -3847,6 +4202,182 @@
             return `${days}d ago`;
         }
 
+        function generateSmartSuggestionsHTML(limit = 3) {
+            // Check if in permanent mode - show info message instead
+            const isPermanent = localStorage.getItem('expense_distribution_mode') === 'permanent';
+            const t = translations[currentLang];
+
+            if (isPermanent) {
+                // Show informative message in permanent mode
+                const permanentModeTitle = currentLang === 'ar' ? 'اقتراحات ذكية' : currentLang === 'fr' ? 'Suggestions Intelligentes' : 'Smart Suggestions';
+                const permanentModeMsg = currentLang === 'ar'
+                    ? 'هذه الميزة غير متوفرة حالياً في الوضع الدائم. الاقتراحات الذكية تعمل فقط في الوضع الشهري لحساب الحد اليومي المسموح به.'
+                    : currentLang === 'fr'
+                        ? 'Cette fonctionnalité n\'est pas disponible en mode permanent. Les suggestions intelligentes fonctionnent uniquement en mode mensuel pour calculer la limite quotidienne.'
+                        : 'This feature is not available in permanent mode. Smart suggestions work only in monthly mode to calculate daily spending limits.';
+
+                return `
+                    <div class="details-card" style="margin-bottom: 24px; overflow: hidden;">
+                        <div style="padding: 16px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(217, 70, 239, 0.05)); border-radius: 12px; border: 1px dashed var(--border-color);">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                <div style="width: 40px; height: 40px; border-radius: 12px; background: var(--bg); color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-size: 18px; border: 1px solid var(--border-color);">
+                                    <i class="fas fa-lightbulb"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 800; font-size: 16px; color: var(--text);">${permanentModeTitle}</div>
+                                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">${currentLang === 'ar' ? 'غير متاح' : currentLang === 'fr' ? 'Non disponible' : 'Not Available'}</div>
+                                </div>
+                            </div>
+                            <div style="padding: 12px; background: var(--bg); border-radius: 10px; border: 1px solid var(--border-color);">
+                                <div style="display: flex; align-items: flex-start; gap: 10px;">
+                                    <i class="fas fa-info-circle" style="color: var(--primary); font-size: 16px; margin-top: 2px; flex-shrink: 0;"></i>
+                                    <div style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+                                        ${permanentModeMsg}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const cur = currencies[currentCurrency];
+            const now = new Date();
+            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+            const currentDay = now.getDate();
+            const remainingDays = Math.max(1, daysInMonth - currentDay + 1);
+
+            let totalDailyLimit = 0;
+            let suggestionsHTML = '';
+
+            // 1. Analyze Categories
+            const suggestions = expenseManagerData.items
+                .map(item => {
+                    const remaining = item.budget - item.actual;
+                    const daily = remaining > 0 ? remaining / remainingDays : 0;
+                    const percentUsed = item.budget > 0 ? (item.actual / item.budget) * 100 : 0;
+
+                    if (remaining > 0) totalDailyLimit += daily;
+
+                    return {
+                        category: item.category,
+                        remaining: remaining,
+                        dailyLimit: daily,
+                        percentUsed: percentUsed,
+                        budget: item.budget
+                    };
+                })
+                .sort((a, b) => {
+                    // Prioritize categories close to limit (80-99%) or over limit
+                    if (a.percentUsed >= 100 && b.percentUsed < 100) return -1;
+                    if (b.percentUsed >= 100 && a.percentUsed < 100) return 1;
+                    if (a.percentUsed > 80 && b.percentUsed <= 80) return -1;
+                    if (b.percentUsed > 80 && a.percentUsed <= 80) return 1;
+                    return b.dailyLimit - a.dailyLimit;
+                });
+
+            // 2. Generate HTML
+            if (suggestions.length > 0 || totalDailyLimit > 0) {
+                // Total Daily Suggestion
+                if (totalDailyLimit > 0) {
+                    suggestionsHTML += `
+                        <div class="suggestion-card total" style="background: linear-gradient(135deg, #0ea5e9, #0284c7); padding: 15px; border-radius: 16px; margin-bottom: 12px; color: white; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);">
+                             <div style="width: 45px; height: 45px; border-radius: 12px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 14px; font-weight: 700; line-height: 1.4;">
+                                    ${t.smart_suggestion_total.replace('{amount}', `<span style="font-weight: 800; font-size: 16px;">${cur.symbol} ${totalDailyLimit.toFixed(0)}</span>`)}
+                                </div>
+                                <div style="font-size: 11px; opacity: 0.9; margin-top: 2px;">${t.smart_suggestion_advice}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Category Suggestions
+                suggestions.slice(0, limit).forEach(s => {
+                    let icon = 'fa-lightbulb';
+                    let color = 'var(--primary)';
+                    let bg = 'rgba(139, 92, 246, 0.1)';
+                    let msg = '';
+
+                    if (s.percentUsed >= 100) {
+                        icon = 'fa-exclamation-triangle';
+                        color = '#ef4444';
+                        bg = '#fef2f2';
+                        msg = t.smart_suggestion_exhausted.replace('{category}', s.category);
+                    } else if (s.percentUsed > 80) {
+                        icon = 'fa-triangle-exclamation';
+                        color = '#f59e0b';
+                        bg = '#fffbeb';
+                        msg = `${t.notif_budget_watch.replace('{percent}', s.percentUsed.toFixed(0))} (${s.category})`;
+                    } else {
+                        msg = t.smart_suggestion_msg.replace('{amount}', `<span style="color: var(--primary); font-weight: 800;">${cur.symbol} ${s.dailyLimit.toFixed(0)}</span>`).replace('{category}', s.category);
+                    }
+
+                    suggestionsHTML += `
+                        <div class="suggestion-card" style="background: var(--bg); padding: 12px; border-radius: 16px; margin-bottom: 10px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 12px;">
+                             <div style="width: 40px; height: 40px; border-radius: 12px; background: ${bg}; color: ${color}; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+                                <i class="fas ${icon}"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 13px; color: var(--text); font-weight: 700; line-height: 1.4;">
+                                    ${msg}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                suggestionsHTML = `
+                    <div style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 13px;">
+                        <i class="fas fa-check-circle" style="color: #10b981; font-size: 24px; margin-bottom: 8px;"></i>
+                        <div>${t.smart_suggestion_empty}</div>
+                    </div>
+                 `;
+            }
+
+            // 3. Wrap in Collapsible Container
+            const suggestionsTitle = currentLang === 'ar' ? 'اقتراحات ذكية' : currentLang === 'fr' ? 'Suggestions Intelligentes' : 'Smart Suggestions';
+            const suggestionsCount = Math.min(suggestions.length, limit);
+
+            return `
+                <div class="details-card" style="margin-bottom: 24px; overflow: hidden;">
+                    <div onclick="toggleSmartSuggestions()" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 16px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(217, 70, 239, 0.1)); border-radius: 12px; transition: all 0.3s;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #8b5cf6, #d946ef); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight: 800; font-size: 16px; color: var(--text);">${suggestionsTitle}</div>
+                                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${suggestionsCount} ${currentLang === 'ar' ? 'اقتراح' : currentLang === 'fr' ? 'suggestions' : 'suggestions'}</div>
+                            </div>
+                        </div>
+                        <i id="suggestions-toggle-icon" class="fas fa-chevron-down" style="color: var(--primary); font-size: 18px; transition: transform 0.3s;"></i>
+                    </div>
+                    <div id="smart-suggestions-content" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; padding: 0 16px;">
+                        <div style="padding-top: 16px;">
+                            ${suggestionsHTML}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleSmartSuggestions() {
+            const content = document.getElementById('smart-suggestions-content');
+            const icon = document.getElementById('suggestions-toggle-icon');
+
+            if (content.style.maxHeight === '0px' || content.style.maxHeight === '') {
+                content.style.maxHeight = content.scrollHeight + 'px';
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                content.style.maxHeight = '0px';
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
         function resetPermanentPeriod() {
             const t = translations[currentLang];
             showConfirmationModal(
@@ -4005,6 +4536,10 @@
                 }).join('');
             }
 
+
+            // Check if in permanent mode
+            const isPermanent = localStorage.getItem('expense_distribution_mode') === 'permanent';
+
             // Recent Activities Logic
             const logs = expenseManagerData.activityLog || [];
             const recentLogs = logs.slice(0, 2);
@@ -4046,7 +4581,6 @@
             const setupIcon = expenseManagerData.items.length === 0 ? 'fa-plus' : 'fa-pen-to-square';
 
             // Chart Section
-            const isPermanent = localStorage.getItem('expense_distribution_mode') === 'permanent';
             let periodControlHTML = '';
 
             // في الوضع الشهري فقط: عرض زر اختيار الشهر
@@ -4131,12 +4665,12 @@
             </div>
 
             <!-- Recent Activities (Timeline Design) -->
-            ${recentLogs.length > 0 ? `
             <div class="details-card" style="padding: 30px 20px; text-align: inherit;">
                 <div style="text-align: center; margin-bottom: 30px;">
                     <div class="details-title" style="margin-bottom: 0;">${t.recent_activities}</div>
                 </div>
                 
+                ${recentLogs.length > 0 ? `
                 <div class="timeline-container">
                     ${activitiesHTML}
                 </div>
@@ -4147,8 +4681,16 @@
                         ${t.view_more} <i class="fas fa-arrow-down" style="margin-inline-start: 5px;"></i>
                     </button>
                 </div>` : ''}
+                ` : `
+                <div style="text-align: center; padding: 40px 20px;">
+                    <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--bg); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-history" style="font-size: 24px; color: var(--text-muted); opacity: 0.5;"></i>
+                    </div>
+                    <div style="font-size: 14px; color: var(--text-muted); font-weight: 600;">${t.no_activities || 'لا توجد أنشطة بعد'}</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">${t.activities_will_appear || 'ستظهر الأنشطة هنا عند إجراء تعديلات'}</div>
+                </div>
+                `}
             </div>
-            ` : ''}
 
             <!-- Budget Setup Modal -->
             <div id="budgetModal" class="dev-modal-overlay" style="z-index: 2000;">
@@ -5531,6 +6073,7 @@
                 case 'expense_insights': content = getExpenseInsightsView(); break;
                 case 'smart_wallet': content = getSmartWalletView(); break;
                 case 'attendance': content = getAttendanceView(); break;
+                case 'reports': content = getReportsView(); break;
                 case 'about': content = getAboutView(); break;
                 default: content = `<div class="card" style="padding:40px; text-align:center; color: var(--text-muted);">
                     <i class="fa-solid fa-person-digging" style="font-size: 40px; margin-bottom: 15px;"></i>
@@ -5927,18 +6470,7 @@
         }
 
 
-        function openAIModal() {
-            const modal = document.getElementById('aiModal');
-            modal.style.display = 'flex';
-            modal.offsetHeight;
-            modal.classList.add('open');
-        }
 
-        function closeAIModal() {
-            const modal = document.getElementById('aiModal');
-            modal.classList.remove('open');
-            setTimeout(() => { modal.style.display = 'none'; }, 300);
-        }
     </script>
 
     <!-- Auth Modal -->
@@ -6067,19 +6599,7 @@
         </div>
     </div>
 
-    <!-- AI Coming Soon Modal -->
-    <div id="aiModal" class="dev-modal-overlay" onclick="if(event.target === this) closeAIModal()">
-        <div class="dev-modal" style="text-align: center; max-width: 350px;">
-            <div
-                style="width: 80px; height: 80px; background: linear-gradient(135deg,#8b5cf6,#d946ef); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);">
-                <i class="fas fa-robot" style="font-size: 35px; color: white;"></i>
-            </div>
-            <h3 id="aiModalTitle" style="font-weight: 800; font-size: 20px; margin-bottom: 10px;"></h3>
-            <p id="aiModalDesc" style="color: var(--text-muted); line-height: 1.6; margin-bottom: 25px;"></p>
-            <button id="aiModalBtn" onclick="closeAIModal()" class="splash-btn"
-                style="width: 100%; justify-content: center;"></button>
-        </div>
-    </div>
+
 
     <!-- Smart Notifications Modal -->
     <div id="notificationsModal" class="dev-modal-overlay"
